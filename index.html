@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AR Пазл Фото</title>
+
+  <!-- A-Frame -->
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <!-- MindAR -->
+  <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/dist/mindar-image.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  <!-- Super Hands для drag&drop -->
+  <script src="https://cdn.jsdelivr.net/npm/aframe-super-hands-component@4.0.5/dist/aframe-super-hands.min.js"></script>
+</head>
+<body style="margin:0; padding:0; overflow:hidden;">
+
+  <!-- Кнопка завантаження фото -->
+  <input type="file" id="upload" accept="image/*" style="position:absolute; z-index:10; top:10px; left:10px;">
+
+  <a-scene mindar-image="imageTargetSrc: ./targets.mind;" 
+           color-space="sRGB" 
+           embedded 
+           vr-mode-ui="enabled: false" 
+           device-orientation-permission-ui="enabled: false">
+
+    <a-assets>
+      <!-- Тут з’явиться завантажене фото -->
+      <img id="puzzle" crossorigin="anonymous"/>
+    </a-assets>
+
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+    <a-entity id="cursor" cursor="rayOrigin: mouse"></a-entity>
+
+    <!-- Маркер -->
+    <a-entity mindar-image-target="targetIndex: 0" id="puzzle-container">
+      <!-- Пазли з'являться тут через JS -->
+    </a-entity>
+  </a-scene>
+
+  <script>
+    const upload = document.getElementById('upload');
+    const img = document.getElementById('puzzle');
+    const container = document.getElementById('puzzle-container');
+
+    upload.addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          img.setAttribute('src', e.target.result);
+
+          // Очистити контейнер
+          container.innerHTML = "";
+
+          // Координати для 4 шматків
+          const positions = [
+            {x: -0.3, y: 0.3, offset: "0 0"},
+            {x: 0.3, y: 0.3, offset: "0.5 0"},
+            {x: -0.3, y: -0.3, offset: "0 0.5"},
+            {x: 0.3, y: -0.3, offset: "0.5 0.5"}
+          ];
+
+          positions.forEach((p, i) => {
+            const piece = document.createElement("a-plane");
+            piece.setAttribute("width", "0.5");
+            piece.setAttribute("height", "0.5");
+            piece.setAttribute("position", `${p.x} ${p.y} 0`);
+            piece.setAttribute("grabbable", "");
+            piece.setAttribute("draggable", "");
+            piece.setAttribute("droppable", "");
+            piece.setAttribute("material", `src: #puzzle; shader: flat; repeat: 0.5 0.5; offset: ${p.offset}`);
+            container.appendChild(piece);
+          });
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  </script>
+</body>
+</html>
