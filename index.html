@@ -21,7 +21,7 @@
             height: 100%;
             overflow: hidden;
             font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
-            background: linear-gradient(180deg, #87CEEB, #FFDAB9); /* Яскравий градієнт для фону */
+            background: transparent; /* Прозорий фон для всього тіла */
         }
         a-scene {
             width: 100% !important;
@@ -126,7 +126,7 @@
         #canvasGameContainer {
             z-index: 1000;
             position: relative;
-            background: linear-gradient(180deg, #87CEEB, #FFDAB9); /* Фон для Canvas */
+            background: transparent; /* Прозорий фон для Canvas */
         }
         #endMessage {
             position: fixed;
@@ -434,7 +434,7 @@
             constructor(ctx, canvas) {
                 this.ctx = ctx;
                 this.canvas = canvas;
-                this.ctx.font = "24px 'Comic Neue', 'Comic Sans MS', cursive, sans-serif";
+                this.ctx.font = "20px 'Comic Neue', 'Comic Sans MS', cursive, sans-serif"; // Зменшено розмір шрифту
                 this.ctx.textAlign = 'center';
                 this.ctx.textBaseline = 'middle';
             }
@@ -443,7 +443,7 @@
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             }
 
-            drawText(text, x, y, size = `${Math.min(this.canvas.width, this.canvas.height) * 0.05}px`, color = '#FFFFFF', align = 'center') {
+            drawText(text, x, y, size = `${Math.min(this.canvas.width, this.canvas.height) * 0.04}px`, color = '#FFFFFF', align = 'center') {
                 this.ctx.font = `${size} 'Comic Neue', 'Comic Sans MS', cursive, sans-serif`;
                 this.ctx.textAlign = align;
                 this.ctx.fillStyle = color;
@@ -453,7 +453,7 @@
                 this.ctx.shadowBlur = 0;
             }
 
-            drawWrappedText(text, x, y, size = '20px', color = '#FFFFFF', maxWidth = 280) {
+            drawWrappedText(text, x, y, size = '18px', color = '#FFFFFF', maxWidth = 280) { // Зменшено розмір шрифту
                 this.ctx.font = `${size} 'Comic Neue', 'Comic Sans MS', cursive, sans-serif`;
                 this.ctx.textAlign = 'center';
                 this.ctx.fillStyle = color;
@@ -551,8 +551,6 @@
             }
 
             render() {
-                this.game.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-                this.game.ctx.fillRect(this.game.canvas.width / 2 - 200, this.game.canvas.height / 2 - 150, 400, 300);
                 this.game.renderSystem.drawText("✨ Місія Миру ✨", this.game.canvas.width / 2, this.game.canvas.height / 2 - 100, '40px', '#FF69B4');
                 this.game.renderSystem.drawText("Тисни на елементи — врятуй світ від темряви! 🌟", this.game.canvas.width / 2, this.game.canvas.height / 2 - 50, '28px', '#FFD700');
                 this.game.renderSystem.drawText("Натисни 🚀 Почати!", this.game.canvas.width / 2, this.game.canvas.height / 2 + 50, '32px', '#32CD32');
@@ -956,7 +954,7 @@
 
             render() {
                 this.game.renderSystem.drawText("💡 Творче завдання:", this.game.canvas.width / 2, this.game.canvas.height / 2 - 80, '28px', '#FFD700');
-                this.game.renderSystem.drawText(this.game.tipText, this.game.canvas.width / 2, this.game.canvas.height / 2, '20px', '#FFFFFF', 'center');
+                this.game.renderSystem.drawWrappedText(this.game.tipText, this.game.canvas.width / 2, this.game.canvas.height / 2, '20px', '#FFFFFF', 280);
                 this.game.renderSystem.drawText("Натисни ▶️ Далі", this.game.canvas.width / 2, this.game.canvas.height / 2 + 80, '24px', '#00FF7F');
             }
 
