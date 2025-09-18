@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>AR Planet App with MindAR</title>
+  <title>AR Planet App with Custom MindAR Marker</title>
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
   <script>
     // Компонент для обробки жестів (обертання пальцем, pinch для зуму)
     AFRAME.registerComponent('gesture-handler', {
@@ -72,43 +72,71 @@
         });
       }
     });
+
+    // Діагностика MindAR
+    const startMindAR = () => {
+      const startButton = document.querySelector('#start');
+      startButton.style.display = 'none';
+      const scene = document.querySelector('a-scene');
+      scene.setAttribute('mindar-image', { imageTargetSrc: 'my-marker.mind', autoStart: true, maxTrack: 1 });
+      scene.addEventListener('targetFound', () => {
+        document.querySelector('#status').innerText = 'Маркер розпізнано! Планета з\'явилася.';
+      });
+      scene.addEventListener('targetLost', () => {
+        document.querySelector('#status').innerText = 'Маркер втрачено. Наведи камеру знову.';
+      });
+      scene.addEventListener('arError', (event) => {
+        document.querySelector('#status').innerText = 'Помилка AR: ' + event.detail.error;
+        console.error('MindAR Error:', event.detail);
+      });
+      scene.addEventListener('arReady', () => {
+        document.querySelector('#status').innerText = 'AR готовий. Наведи камеру на маркер.';
+      });
+    };
   </script>
 </head>
 <body>
-  <a-scene mindar-image="imageTargetSrc: https://cdn.jsdelivr.net/npm/mindar-image-target@0.4.0/targets.mind; autoStart: true;">
-    <a-camera id="camera" position="0 0 0" look-controls="enabled: false"></a-camera>
+  <div id="status" style="position: absolute; top: 10px; left: 10px; color: white; background: rgba(0,0,0,0.5); padding: 5px; font-size: 18px; z-index: 100;">Наведи камеру на маркер...</div>
+  <button id="start" onclick="startMindAR()" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100;">Запустити AR</button>
+
+  <a-scene embedded color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+    <a-camera id="camera" position="0 0 0" look-controls="enabled: false" cursor="rayOrigin: mouse; fuse: false" raycaster="objects: .clickable"></a-camera>
 
     <a-entity mindar-image-target="targetIndex: 0">
       <a-sphere id="planet"
                 position="0 0 0"
                 radius="0.5"
-                src="https://cdn.jsdelivr.net/npm/aframe@1.6.0/examples/boilerplate/panorama/earth.jpg"
+                src="earth.jpg" <!-- Використовую локальний earth.jpg -->
                 gesture-handler
                 scale="1 1 1">
-        <!-- Точки з номерами (розташовані на поверхні, завжди дивляться на камеру) -->
+        <!-- Точки з номерами (збільшено масштаб і виправлено позиціонування) -->
         <a-text class="clickable"
                 value="1"
-                position="0 0.55 0"
-                scale="0.2 0.2 0.2"
-                look-at="#camera"
+                position="0 0.6 0"
+                scale="0.3 0.3 0.3"
+                rotation="0 0 0"
+                billboard
                 click-task="task: Мир починається з тебе! Напиши 3 добрі вчинки, які можеш зробити сьогодні."></a-text>
         <a-text class="clickable"
                 value="2"
-                position="0.55 0 0"
-                scale="0.2 0.2 0.2"
-                look-at="#camera"
+                position="0.6 0 0"
+                scale="0.3 0.3 0.3"
+                rotation="0 0 0"
+                billboard
                 click-task="task: Захисти планету! Назви 3 способи зменшити пластикові відходи."></a-text>
         <a-text class="clickable"
                 value="3"
-                position="0 -0.55 0"
-                scale="0.2 0.2 0.2"
-                look-at="#camera"
+                position="0 -0.6 0"
+                scale="0.3 0.3 0.3"
+                rotation="0 0 0"
+                billboard
                 click-task="task: Будь добрим! Поділися компліментом з другом."></a-text>
         <a-text class="clickable"
                 value="4"
-                position="-0.55 0 0"
-                scale="0.2 0.2 0.2"
-                look-at="#camera"
+                position="-0.6 0 0"
+                scale="0.3 0.3 0.3"
+                rotation="0 0 0"
+                billboard
                 click-task="task: Навчайся! Що ти хочеш вивчити цього тижня?"></a-text>
       </a-sphere>
     </a-entity>
