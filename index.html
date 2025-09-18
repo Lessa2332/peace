@@ -1,145 +1,147 @@
 <!DOCTYPE html>
-<html>
+<html lang="uk">
 <head>
-  <title>AR Planet App with Custom MindAR Marker</title>
-  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-  <script>
-    // Компонент для обробки жестів (обертання пальцем, pinch для зуму)
-    AFRAME.registerComponent('gesture-handler', {
-      init: function () {
-        this.targetRotation = this.el.getAttribute('rotation') || {x: 0, y: 0, z: 0};
-        this.initialScale = this.el.object3D.scale.x;
-        this.previousTouchDistance = 0;
-        this.isRotating = false;
-        this.isPinching = false;
-        this.startX = 0;
-        this.startY = 0;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="AR-сцена з оживанням голуба для дітей 7-9 років">
+    <title>🎉 AR Голуб Миру 🎈</title>
 
-        document.addEventListener('touchstart', this.onTouchStart.bind(this));
-        document.addEventListener('touchmove', this.onTouchMove.bind(this));
-        document.addEventListener('touchend', this.onTouchEnd.bind(this));
-      },
-      onTouchStart: function (evt) {
-        if (evt.touches.length === 1) {
-          this.isRotating = true;
-          this.startX = evt.touches[0].pageX;
-          this.startY = evt.touches[0].pageY;
-        } else if (evt.touches.length === 2) {
-          this.isPinching = true;
-          this.previousTouchDistance = Math.hypot(
-            evt.touches[0].pageX - evt.touches[1].pageX,
-            evt.touches[0].pageY - evt.touches[1].pageY
-          );
-          this.initialScale = this.el.object3D.scale.x;
-        }
-      },
-      onTouchMove: function (evt) {
-        evt.preventDefault();
-        if (this.isRotating && evt.touches.length === 1) {
-          const deltaX = evt.touches[0].pageX - this.startX;
-          const deltaY = evt.touches[0].pageY - this.startY;
-          this.targetRotation.y += deltaX * 0.5;
-          this.targetRotation.x += deltaY * 0.5;
-          this.el.setAttribute('rotation', `${this.targetRotation.x} ${this.targetRotation.y} 0`);
-          this.startX = evt.touches[0].pageX;
-          this.startY = evt.touches[0].pageY;
-        } else if (this.isPinching && evt.touches.length === 2) {
-          const currentTouchDistance = Math.hypot(
-            evt.touches[0].pageX - evt.touches[1].pageX,
-            evt.touches[0].pageY - evt.touches[1].pageY
-          );
-          const scaleFactor = currentTouchDistance / this.previousTouchDistance;
-          const newScale = Math.max(0.5, Math.min(3, this.initialScale * scaleFactor));
-          this.el.setAttribute('scale', `${newScale} ${newScale} ${newScale}`);
-          this.previousTouchDistance = currentTouchDistance;
-        }
-      },
-      onTouchEnd: function (evt) {
-        if (evt.touches.length === 0) {
-          this.isRotating = false;
-          this.isPinching = false;
-        }
-      }
-    });
+    <!-- A-Frame + MindAR -->
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
 
-    // Компонент для кліку на точку (показ alert з завданням)
-    AFRAME.registerComponent('click-task', {
-      schema: { task: { type: 'string' } },
-      init: function () {
-        this.el.addEventListener('click', () => {
-          alert(this.data.task);
-        });
-      }
-    });
-
-    // Діагностика MindAR
-    const startMindAR = () => {
-      const startButton = document.querySelector('#start');
-      startButton.style.display = 'none';
-      const scene = document.querySelector('a-scene');
-      scene.setAttribute('mindar-image', { imageTargetSrc: 'my-marker.mind', autoStart: true, maxTrack: 1 });
-      scene.addEventListener('targetFound', () => {
-        document.querySelector('#status').innerText = 'Маркер розпізнано! Планета з\'явилася.';
-      });
-      scene.addEventListener('targetLost', () => {
-        document.querySelector('#status').innerText = 'Маркер втрачено. Наведи камеру знову.';
-      });
-      scene.addEventListener('arError', (event) => {
-        document.querySelector('#status').innerText = 'Помилка AR: ' + event.detail.error;
-        console.error('MindAR Error:', event.detail);
-      });
-      scene.addEventListener('arReady', () => {
-        document.querySelector('#status').innerText = 'AR готовий. Наведи камеру на маркер.';
-      });
-    };
-  </script>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: transparent; /* Прозорий фон */
+        }
+        a-scene {
+            width: 100% !important;
+            height: 100% !important;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: transparent;
+        }
+        .arjs-loader {
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: rgba(135, 206, 235, 0.2); /* Майже прозорий лоадер */
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #FF4500;
+            font-size: 1.8em;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+            font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .pulse {
+            animation: pulse 1.5s infinite;
+        }
+    </style>
 </head>
 <body>
-  <div id="status" style="position: absolute; top: 10px; left: 10px; color: white; background: rgba(0,0,0,0.5); padding: 5px; font-size: 18px; z-index: 100;">Наведи камеру на маркер...</div>
-  <button id="start" onclick="startMindAR()" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100;">Запустити AR</button>
+    <div class="arjs-loader" id="loader">
+        <div class="pulse">🎉 Голуб Миру 🎈</div>
+        <div style="margin-top: 20px; font-size: 1.2em;">
+            Наведи камеру на розмальовку голуба! 😊🎨
+        </div>
+    </div>
 
-  <a-scene embedded color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
-    <a-camera id="camera" position="0 0 0" look-controls="enabled: false" cursor="rayOrigin: mouse; fuse: false" raycaster="objects: .clickable"></a-camera>
+    <a-scene
+        mindar-image="imageTargetSrc: ./targets.mind;"
+        vr-mode-ui="enabled: false"
+        device-orientation-permission-ui="enabled: false"
+        loading-screen="enabled: false"
+        embedded
+        renderer="colorManagement: true; physicallyCorrectLights: true;"
+    >
+        <a-assets timeout="30000">
+            <video id="dove-video" src="./dove_flying.mp4" preload="auto" loop="true" playsinline crossorigin="anonymous" muted="true"></video>
+        </a-assets>
 
-    <a-entity mindar-image-target="targetIndex: 0">
-      <a-sphere id="planet"
-                position="0 0 0"
-                radius="0.5"
-                src="earth.jpg" <!-- Використовую локальний earth.jpg -->
-                gesture-handler
-                scale="1 1 1">
-        <!-- Точки з номерами (збільшено масштаб і виправлено позиціонування) -->
-        <a-text class="clickable"
-                value="1"
-                position="0 0.6 0"
-                scale="0.3 0.3 0.3"
+        <a-camera
+            look-controls="enabled: false"
+            position="0 0 0"
+        ></a-camera>
+
+        <a-entity mindar-image-target="targetIndex: 0">
+            <a-video
+                id="dove-video-entity"
+                src="#dove-video"
+                position="0 0 0.1"
+                width="1"
+                height="1"
                 rotation="0 0 0"
-                billboard
-                click-task="task: Мир починається з тебе! Напиши 3 добрі вчинки, які можеш зробити сьогодні."></a-text>
-        <a-text class="clickable"
-                value="2"
-                position="0.6 0 0"
-                scale="0.3 0.3 0.3"
-                rotation="0 0 0"
-                billboard
-                click-task="task: Захисти планету! Назви 3 способи зменшити пластикові відходи."></a-text>
-        <a-text class="clickable"
-                value="3"
-                position="0 -0.6 0"
-                scale="0.3 0.3 0.3"
-                rotation="0 0 0"
-                billboard
-                click-task="task: Будь добрим! Поділися компліментом з другом."></a-text>
-        <a-text class="clickable"
-                value="4"
-                position="-0.6 0 0"
-                scale="0.3 0.3 0.3"
-                rotation="0 0 0"
-                billboard
-                click-task="task: Навчайся! Що ти хочеш вивчити цього тижня?"></a-text>
-      </a-sphere>
-    </a-entity>
-  </a-scene>
+                visible="true"
+            ></a-video>
+        </a-entity>
+    </a-scene>
+
+    <script>
+        // Фіксація висоти для мобільних пристроїв
+        function fixHeight() {
+            document.body.style.height = window.innerHeight + 'px';
+        }
+        fixHeight();
+        window.addEventListener('resize', fixHeight);
+
+        // Змінні та елементи DOM
+        const loader = document.querySelector('#loader');
+        const targetEntity = document.querySelector('[mindar-image-target]');
+        const doveVideoEntity = document.querySelector('#dove-video-entity');
+        const doveVideo = document.querySelector('#dove-video');
+
+        // Діагностика завантаження відео
+        doveVideo.addEventListener('loadeddata', () => {
+            console.log("✅ Відео dove_flying.mp4 успішно завантажено");
+        });
+        doveVideo.addEventListener('error', () => {
+            console.error("❌ Помилка завантаження dove_flying.mp4. Перевірте шлях до файлу або формат.");
+        });
+
+        // Обробка подій AR
+        if (targetEntity) {
+            targetEntity.addEventListener('targetFound', () => {
+                console.log("🎯 Маркер знайдено! Голуб оживає.");
+                loader.style.display = 'none';
+                if (doveVideoEntity) doveVideoEntity.setAttribute('visible', 'true');
+                if (doveVideo) {
+                    doveVideo.play().catch(e => console.log("🔇 Відео не запустилося:", e));
+                }
+            });
+
+            targetEntity.addEventListener('targetLost', () => {
+                console.log("ℹ️ Маркер втрачено.");
+                loader.style.display = 'block';
+                if (doveVideoEntity) doveVideoEntity.setAttribute('visible', 'false');
+                if (doveVideo) doveVideo.pause();
+            });
+        }
+
+        // Обробка втрати фокусу сторінки
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden' && doveVideo) {
+                console.log("ℹ️ Сторінка втратила фокус, зупиняємо відео");
+                doveVideo.pause();
+            }
+        });
+    </script>
 </body>
 </html>
