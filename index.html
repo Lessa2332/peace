@@ -1,81 +1,1039 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AR Пазл Фото</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🎉 AR Гра "Смайлик-Сюрприз!" — до Дня Смайла! 🎈</title>
 
-  <!-- A-Frame -->
-  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-  <!-- MindAR -->
-  <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/dist/mindar-image.prod.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-  <!-- Super Hands для drag&drop -->
-  <script src="https://cdn.jsdelivr.net/npm/aframe-super-hands-component@4.0.5/dist/aframe-super-hands.min.js"></script>
+    <!-- A-Frame + MindAR -->
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
+
+    <!-- Додаємо Comic Neue для кращого рендерингу на iOS -->
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
+            text-transform: none;
+        }
+        a-scene {
+            width: 100% !important;
+            height: 100% !important;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: transparent;
+        }
+        .arjs-loader {
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: rgba(135, 206, 235, 0.6);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #000000;
+            font-size: 1.5em;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+            font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
+            text-transform: none;
+        }
+        .ui-btn {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 16px 30px;
+            border-radius: 40px;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-decoration: none;
+            z-index: 1000;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+            display: none;
+            font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
+            text-transform: none;
+        }
+        #playBtn {
+            bottom: 180px;
+            background: linear-gradient(45deg, #FF6B6B, #FF8E53);
+            color: white;
+        }
+        #stopBtn {
+            bottom: 180px;
+            background: linear-gradient(45deg, #ff4757, #ff6b81);
+            color: white;
+        }
+        #resetBtn {
+            bottom: 100px;
+            background: linear-gradient(45deg, #54a0ff, #5f27cd);
+            color: white;
+        }
+        #soundBtn {
+            bottom: 260px;
+            background: linear-gradient(45deg, #00CED1, #20B2AA);
+            color: white;
+        }
+        #youtubeBtn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            transform: none;
+            padding: 12px 20px;
+            background: linear-gradient(45deg, #ff4757, #ff6348);
+            color: white;
+            border-radius: 25px;
+            font-size: 0.95em;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: none;
+            font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
+            z-index: 1100;
+            cursor: pointer;
+            text-decoration: none;
+            text-transform: none;
+        }
+        #youtubeBtn:hover {
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.4);
+        }
+        .ui-info-text {
+            position: fixed;
+            left: 10px;
+            top: 10px;
+            transform: none;
+            z-index: 500;
+            font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
+            text-align: left;
+            font-weight: bold;
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
+            text-transform: none;
+        }
+        #timerText {
+            color: #00008B; /* Темно-синій для кращого контрасту */
+            font-size: 1.4em;
+            display: none;
+        }
+        #scoreText {
+            top: 50px;
+            color: #00FF7F;
+            font-size: 1.4em;
+            display: none;
+        }
+        #canvasGameContainer {
+            z-index: 1000;
+            position: relative;
+        }
+        #endMessage {
+            font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
+            text-transform: none;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
 </head>
-<body style="margin:0; padding:0; overflow:hidden;">
+<body>
+    <div class="arjs-loader" id="loader">
+        <div class="pulse">🎉 Ласкаво просимо до гри "Смайлик-Сюрприз!" 🎈</div>
+        <div style="margin-top: 20px; font-size: 1.1em;">
+            Наведи камеру на маркер, щоб почати гру! 😊
+        </div>
+    </div>
 
-  <!-- Кнопка завантаження фото -->
-  <input type="file" id="upload" accept="image/*" style="position:absolute; z-index:10; top:10px; left:10px;">
+    <p id="timerText" class="ui-info-text">⏳ Час: 01:00</p>
+    <p id="scoreText" class="ui-info-text">🌟 Смайликів: 0</p>
 
-  <a-scene mindar-image="imageTargetSrc: ./targets.mind;" 
-           color-space="sRGB" 
-           embedded 
-           vr-mode-ui="enabled: false" 
-           device-orientation-permission-ui="enabled: false">
+    <div id="canvasGameContainer" style="display: none;">
+        <canvas id="gameCanvas"></canvas>
+        <button id="endBtn" class="ui-btn">🛑 Завершити</button>
+    </div>
 
-    <a-assets>
-      <!-- Тут з’явиться завантажене фото -->
-      <img id="puzzle" crossorigin="anonymous"/>
-    </a-assets>
+    <div id="endMessage" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(74,21,75,0.9); color:white; padding:20px; border-radius:15px; z-index:10000; font-size:1.2em; text-align:center; font-family:'Comic Neue', 'Comic Sans MS', cursive; box-shadow:0 8px 20px rgba(0,0,0,0.4);">
+    </div>
 
-    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-    <a-entity id="cursor" cursor="rayOrigin: mouse"></a-entity>
+    <a-scene
+        mindar-image="imageTargetSrc: ./targets.mind;"
+        vr-mode-ui="enabled: false"
+        device-orientation-permission-ui="enabled: false"
+        loading-screen="enabled: false"
+        embedded
+        renderer="colorManagement: true; physicallyCorrectLights: true;"
+    >
+        <a-assets>
+            <audio id="bg-music" src="./bg-music.mp3" preload="auto" muted playsinline crossorigin="anonymous"></audio>
+            <audio id="click-sound" src="./click-sound.mp3" preload="auto" muted playsinline crossorigin="anonymous"></audio>
+            <audio id="logo-sound" src="./lab.mp3" preload="auto" muted playsinline crossorigin="anonymous"></audio>
+            <a-asset-item id="planet-model" src="./planet.glb"></a-asset-item>
+        </a-assets>
 
-    <!-- Маркер -->
-    <a-entity mindar-image-target="targetIndex: 0" id="puzzle-container">
-      <!-- Пазли з'являться тут через JS -->
-    </a-entity>
-  </a-scene>
+        <a-camera
+            look-controls="enabled: false"
+            position="0 0 0"
+        >
+            <a-cursor
+                raycaster="objects: .emoji;"
+                cursor="fuse: false; maxDistance: 10"
+                position="0 0 -1"
+                geometry="primitive: ring; radiusOuter: 0.015; radiusInner: 0.008"
+                material="color: #FFD700; shader: flat"
+            ></a-cursor>
+        </a-camera>
 
-  <script>
-    const upload = document.getElementById('upload');
-    const img = document.getElementById('puzzle');
-    const container = document.getElementById('puzzle-container');
+        <a-entity mindar-image-target="targetIndex: 0">
+            <a-entity
+                id="planet-model-entity"
+                gltf-model="#planet-model"
+                position="0 0 0.1"
+                rotation="0 0 0"
+                scale="0.5 0.5 0.5"
+                visible="true"
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 20000; easing: linear"
+            ></a-entity>
+            <a-entity id="game-elements" visible="false">
+                <!-- Тут можна додати допоміжні елементи для AR -->
+            </a-entity>
+        </a-entity>
+    </a-scene>
 
-    upload.addEventListener('change', (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          img.setAttribute('src', e.target.result);
+    <button id="playBtn" class="ui-btn">🚀 Почати гру!</button>
+    <button id="stopBtn" class="ui-btn" style="display: none;">🛑 Зупинити</button>
+    <button id="resetBtn" class="ui-btn">🔄 Спробувати ще!</button>
+    <button id="soundBtn" class="ui-btn" style="display: none;">🔊 Увімкнути звук</button>
+    <a href="https://www.youtube.com/@23smartlessa32?si=d3NhKDot8U8Mc2Hi" id="youtubeBtn" target="_blank">❤️ Автор SmartLessa</a>
 
-          // Очистити контейнер
-          container.innerHTML = "";
+    <script>
+        function fixHeight() {
+            document.body.style.height = window.innerHeight + 'px';
+        }
+        fixHeight();
+        window.addEventListener('resize', fixHeight);
 
-          // Координати для 4 шматків
-          const positions = [
-            {x: -0.3, y: 0.3, offset: "0 0"},
-            {x: 0.3, y: 0.3, offset: "0.5 0"},
-            {x: -0.3, y: -0.3, offset: "0 0.5"},
-            {x: 0.3, y: -0.3, offset: "0.5 0.5"}
-          ];
+        const loader = document.querySelector('#loader');
+        const targetEntity = document.querySelector('a-entity[mindar-image-target]');
+        const planetModel = document.querySelector('#planet-model-entity');
+        const playBtn = document.querySelector('#playBtn');
+        const stopBtn = document.querySelector('#stopBtn');
+        const resetBtn = document.querySelector('#resetBtn');
+        const soundBtn = document.querySelector('#soundBtn');
+        const youtubeBtn = document.querySelector('#youtubeBtn');
+        const gameElements = document.querySelector('#game-elements');
+        const timerText = document.getElementById('timerText');
+        const scoreText = document.getElementById('scoreText');
+        const bgMusic = document.querySelector('#bg-music');
+        const logoSound = document.querySelector('#logo-sound');
+        const clickSound = document.querySelector('#click-sound');
+        const endMessage = document.getElementById('endMessage');
 
-          positions.forEach((p, i) => {
-            const piece = document.createElement("a-plane");
-            piece.setAttribute("width", "0.5");
-            piece.setAttribute("height", "0.5");
-            piece.setAttribute("position", `${p.x} ${p.y} 0`);
-            piece.setAttribute("grabbable", "");
-            piece.setAttribute("draggable", "");
-            piece.setAttribute("droppable", "");
-            piece.setAttribute("material", `src: #puzzle; shader: flat; repeat: 0.5 0.5; offset: ${p.offset}`);
-            container.appendChild(piece);
-          });
+        let isGameRunning = false;
+        let arStarted = false;
+        let score = 0;
+        let startTime = null;
+
+        // Зупинка всіх звуків
+        function stopAllAudio() {
+            if (bgMusic) {
+                bgMusic.pause();
+                bgMusic.currentTime = 0;
+                bgMusic.muted = true;
+            }
+            if (logoSound) {
+                logoSound.pause();
+                logoSound.currentTime = 0;
+                logoSound.muted = true;
+            }
+            if (clickSound) {
+                clickSound.pause();
+                clickSound.currentTime = 0;
+                clickSound.muted = true;
+            }
+        }
+
+        // Обробка втрати фокусу сторінки
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                console.log("ℹ️ Сторінка втратила фокус, зупиняємо звуки");
+                stopAllAudio();
+            }
+        });
+
+        // Кнопка увімкнення звуку
+        soundBtn.addEventListener('click', () => {
+            if (bgMusic) bgMusic.muted = false;
+            if (logoSound) {
+                logoSound.muted = false;
+                logoSound.currentTime = 0;
+                logoSound.play().catch(e => console.log("🔇 Звук логотипу не запустився:", e));
+            }
+            if (clickSound) clickSound.muted = false;
+            soundBtn.style.display = 'none';
+        });
+
+        targetEntity.addEventListener('targetFound', () => {
+            console.log("🎯 Маркер знайдено!");
+            arStarted = true;
+            loader.style.display = 'none';
+            if (!isGameRunning) {
+                playBtn.style.display = 'block';
+                soundBtn.style.display = 'block';
+                youtubeBtn.style.display = 'block';
+                if (planetModel) planetModel.setAttribute('visible', 'true');
+            }
+        });
+
+        targetEntity.addEventListener('targetLost', () => {
+            if (isGameRunning) return; // Ігноруємо втрату маркера під час гри
+            playBtn.style.display = 'none';
+            soundBtn.style.display = 'none';
+            youtubeBtn.style.display = 'none';
+            resetBtn.style.display = 'none';
+            if (planetModel) planetModel.setAttribute('visible', 'true');
+            gameElements.setAttribute('visible', 'false');
+            timerText.style.display = 'none';
+            scoreText.style.display = 'none';
+        });
+
+        youtubeBtn.addEventListener('click', () => {
+            console.log("🔗 Клік по YouTube-кнопці!");
+            window.open('https://www.youtube.com/@23smartlessa32?si=d3NhKDot8U8Mc2Hi', '_blank');
+        });
+        youtubeBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            console.log("🔗 Сенсорний клік по YouTube-кнопці!");
+            window.open('https://www.youtube.com/@23smartlessa32?si=d3NhKDot8U8Mc2Hi', '_blank');
+        });
+
+        // ============ STATE MANAGEMENT ============
+        const GAME_STATES = {
+            MENU: 'menu',
+            LEVEL_1: 'level1',
+            LEVEL_2: 'level2',
+            LEVEL_3: 'level3',
+            LEVEL_4: 'level4',
+            LEVEL_5: 'level5',
+            TIP: 'tip',
+            END: 'end'
         };
-        reader.readAsDataURL(file);
-      }
-    });
-  </script>
+
+        let currentState = GAME_STATES.MENU;
+        let nextState = null;
+
+        // ============ SYSTEMS ============
+        class InputSystem {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.touches = [];
+                this.clicks = [];
+                this.setupListeners();
+            }
+
+            setupListeners() {
+                this.canvas.addEventListener('click', (e) => this.handleClick(e));
+                this.canvas.addEventListener('touchstart', (e) => this.handleTouch(e), { passive: false });
+            }
+
+            handleClick(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                this.clicks.push({
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top
+                });
+            }
+
+            handleTouch(e) {
+                e.preventDefault();
+                const rect = this.canvas.getBoundingClientRect();
+                for (let touch of e.touches) {
+                    this.touches.push({
+                        x: touch.clientX - rect.left,
+                        y: touch.clientY - rect.top
+                    });
+                }
+            }
+
+            getInputs() {
+                const allInputs = [...this.clicks, ...this.touches];
+                this.clicks = [];
+                this.touches = [];
+                return allInputs;
+            }
+
+            clear() {
+                this.clicks = [];
+                this.touches = [];
+            }
+        }
+
+        class RenderSystem {
+            constructor(ctx, canvas) {
+                this.ctx = ctx;
+                this.canvas = canvas;
+            }
+
+            clear() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+
+            drawText(text, x, y, size = '24px', color = '#FFFFFF', align = 'center') {
+                this.ctx.font = `${size} 'Comic Neue', 'Comic Sans MS', cursive, sans-serif`;
+                this.ctx.textAlign = align;
+                this.ctx.textBaseline = 'middle';
+                this.ctx.fillStyle = color;
+                this.ctx.fillText(text, x, y);
+            }
+
+            drawEmoji(emoji, x, y, size, alpha = 1) {
+                this.ctx.globalAlpha = alpha;
+                this.ctx.font = `${size}px 'Comic Neue', 'Comic Sans MS', cursive, sans-serif`;
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'middle';
+                this.ctx.fillText(emoji, x, y);
+                this.ctx.globalAlpha = 1;
+            }
+        }
+
+        class CollisionSystem {
+            static isPointInCircle(px, py, cx, cy, radius) {
+                const dx = px - cx;
+                const dy = py - cy;
+                return dx * dx + dy * dy <= radius * radius;
+            }
+        }
+
+        // ============ OBJECT POOL ============
+        class ObjectPool {
+            constructor(createFn, resetFn) {
+                this.createFn = createFn;
+                this.resetFn = resetFn;
+                this.pool = [];
+            }
+
+            acquire() {
+                if (this.pool.length > 0) {
+                    return this.pool.pop();
+                }
+                return this.createFn();
+            }
+
+            release(obj) {
+                this.resetFn(obj);
+                this.pool.push(obj);
+            }
+        }
+
+        // ============ GAME STATE MANAGERS ============
+        class GameState {
+            constructor(game) {
+                this.game = game;
+            }
+            enter() {}
+            exit() {}
+            update(deltaTime) {}
+            render() {}
+            handleInput(inputs) {}
+        }
+
+        // --- MENU STATE ---
+        class MenuState extends GameState {
+            enter() {
+                this.game.showUI(['playBtn']);
+                this.game.hideUI(['stopBtn', 'nextBtn', 'endBtn']);
+            }
+
+            render() {
+                this.game.renderSystem.drawText("✨ Обери рівень ✨", this.game.canvas.width / 2, this.game.canvas.height / 2 - 50, '32px', '#FFFFFF');
+                this.game.renderSystem.drawText("Натисни ▶️ Грати", this.game.canvas.width / 2, this.game.canvas.height / 2 + 20, '24px', '#FFD700');
+            }
+
+            handleInput(inputs) {
+                if (inputs.length > 0) {
+                    this.game.setState(GAME_STATES.LEVEL_1);
+                }
+            }
+        }
+
+        // --- LEVEL 1: Світло проти темряви ---
+        class Level1State extends GameState {
+            constructor(game) {
+                super(game);
+                this.lights = [];
+                this.maxLights = 8;
+                this.collected = 0;
+                this.bgDarkness = 1;
+            }
+
+            enter() {
+                this.lights = [];
+                this.collected = 0;
+                this.bgDarkness = 1;
+                this.spawnLights();
+                this.game.hideUI(['playBtn']);
+                this.game.showUI(['endBtn']);
+            }
+
+            spawnLights() {
+                for (let i = 0; i < this.maxLights; i++) {
+                    this.lights.push({
+                        x: Math.random() * this.game.canvas.width,
+                        y: Math.random() * this.game.canvas.height,
+                        size: 30 + Math.random() * 20,
+                        vx: (Math.random() - 0.5) * 2,
+                        vy: (Math.random() - 0.5) * 2,
+                        emoji: ['✨', '💫'][Math.floor(Math.random() * 2)]
+                    });
+                }
+            }
+
+            update(deltaTime) {
+                // Рух вогників
+                this.lights.forEach(light => {
+                    light.x += light.vx;
+                    light.y += light.vy;
+                    if (light.x < 0 || light.x > this.game.canvas.width) light.vx *= -1;
+                    if (light.y < 0 || light.y > this.game.canvas.height) light.vy *= -1;
+                });
+
+                // Зменшення темряви при зборі
+                if (this.collected > 0) {
+                    this.bgDarkness = Math.max(0, this.bgDarkness - 0.01);
+                }
+
+                // Перехід при зборі всіх
+                if (this.collected >= this.maxLights) {
+                    setTimeout(() => {
+                        this.game.tipText = "Мир починається з тебе. Напиши 3 добрі вчинки, які можеш зробити сьогодні.";
+                        this.game.setState(GAME_STATES.TIP);
+                    }, 1000);
+                }
+            }
+
+            render() {
+                // Темний оверлей
+                this.game.ctx.fillStyle = `rgba(0, 0, 0, ${this.bgDarkness})`;
+                this.game.ctx.fillRect(0, 0, this.game.canvas.width, this.game.canvas.height);
+
+                // Вогники
+                this.lights.forEach(light => {
+                    this.game.renderSystem.drawEmoji(light.emoji, light.x, light.y, light.size);
+                });
+
+                this.game.renderSystem.drawText(`Зібрано: ${this.collected}/${this.maxLights}`, this.game.canvas.width / 2, 40, '20px', '#FFD700');
+            }
+
+            handleInput(inputs) {
+                inputs.forEach(input => {
+                    for (let i = 0; i < this.lights.length; i++) {
+                        const light = this.lights[i];
+                        if (CollisionSystem.isPointInCircle(input.x, input.y, light.x, light.y, light.size / 2)) {
+                            this.lights.splice(i, 1);
+                            this.collected++;
+                            break;
+                        }
+                    }
+                });
+            }
+        }
+
+        // --- LEVEL 2: Мирні слова ---
+        class Level2State extends GameState {
+            constructor(game) {
+                super(game);
+                this.required = ['М', 'И', 'Р']; // Кирилиця!
+                this.current = [];
+                this.letters = [];
+                this.spawned = 0;
+            }
+
+            enter() {
+                this.current = [];
+                this.letters = [];
+                this.spawned = 0;
+                this.spawnLetters();
+                this.game.showUI(['endBtn']);
+            }
+
+            spawnLetters() {
+                if (this.spawned >= 15) return;
+                const letter = this.required[Math.floor(Math.random() * this.required.length)];
+                const baseSize = Math.min(this.game.canvas.width, this.game.canvas.height) * 0.08; // Адаптивний розмір
+                this.letters.push({
+                    x: Math.random() * this.game.canvas.width,
+                    y: Math.random() * this.game.canvas.height,
+                    size: baseSize,
+                    vx: (Math.random() - 0.5) * 3,
+                    vy: (Math.random() - 0.5) * 3,
+                    emoji: letter
+                });
+                this.spawned++;
+                setTimeout(() => this.spawnLetters(), 800);
+            }
+
+            update(deltaTime) {
+                this.letters.forEach(letter => {
+                    letter.x += letter.vx;
+                    letter.y += letter.vy;
+                    if (letter.x < 0 || letter.x > this.game.canvas.width) letter.vx *= -1;
+                    if (letter.y < 0 || letter.y > this.game.canvas.height) letter.vy *= -1;
+                });
+
+                // Перевірка на зібране слово
+                if (this.current.length === 3 && this.current.every((l, i) => l === this.required[i])) {
+                    setTimeout(() => {
+                        this.game.tipText = "Придумай та запиши девіз миру.";
+                        this.game.setState(GAME_STATES.TIP);
+                    }, 1000);
+                }
+            }
+
+            render() {
+                this.letters.forEach(letter => {
+                    // Обведення для контрасту
+                    this.game.ctx.strokeStyle = 'black';
+                    this.game.ctx.lineWidth = 4;
+                    this.game.ctx.font = `bold ${letter.size}px 'Comic Neue', 'Comic Sans MS', cursive, sans-serif`;
+                    this.game.ctx.textAlign = 'center';
+                    this.game.ctx.textBaseline = 'middle';
+                    this.game.ctx.strokeText(letter.emoji, letter.x, letter.y);
+
+                    // Основний текст
+                    this.game.ctx.fillStyle = '#FFFFFF';
+                    this.game.ctx.fillText(letter.emoji, letter.x, letter.y);
+                });
+
+                // Підказка зібраних літер
+                this.game.ctx.strokeStyle = 'black';
+                this.game.ctx.lineWidth = 3;
+                this.game.ctx.font = `bold 28px 'Comic Neue', 'Comic Sans MS', cursive, sans-serif`;
+                this.game.ctx.textAlign = 'center';
+                this.game.ctx.strokeText(`Зібрано: ${this.current.join('')}`, this.game.canvas.width / 2, 40);
+                this.game.ctx.fillStyle = '#FFD700';
+                this.game.ctx.fillText(`Зібрано: ${this.current.join('')}`, this.game.canvas.width / 2, 40);
+            }
+
+            handleInput(inputs) {
+                inputs.forEach(input => {
+                    for (let i = 0; i < this.letters.length; i++) {
+                        const letter = this.letters[i];
+                        if (CollisionSystem.isPointInCircle(input.x, input.y, letter.x, letter.y, letter.size / 2)) {
+                            if (this.current.length < 3 && letter.emoji === this.required[this.current.length]) {
+                                this.current.push(letter.emoji);
+                            }
+                            this.letters.splice(i, 1);
+                            break;
+                        }
+                    }
+                });
+            }
+        }
+
+        // --- LEVEL 3: Захисти друзів ---
+        class Level3State extends GameState {
+            constructor(game) {
+                super(game);
+                this.friends = [];
+                this.clouds = [];
+                this.hits = 0;
+                this.requiredHits = 10;
+            }
+
+            enter() {
+                this.hits = 0;
+                this.friends = [
+                    { x: this.game.canvas.width * 0.25, y: this.game.canvas.height * 0.7, emoji: '👧' },
+                    { x: this.game.canvas.width * 0.5, y: this.game.canvas.height * 0.7, emoji: '🧒' },
+                    { x: this.game.canvas.width * 0.75, y: this.game.canvas.height * 0.7, emoji: '👦' }
+                ];
+                this.spawnClouds();
+                this.game.showUI(['endBtn']);
+            }
+
+            spawnClouds() {
+                if (this.hits >= this.requiredHits) return;
+                const cloud = {
+                    x: Math.random() * this.game.canvas.width,
+                    y: -50,
+                    size: 60,
+                    vy: 1 + Math.random() * 2,
+                    emoji: '☁️⚫'
+                };
+                this.clouds.push(cloud);
+                setTimeout(() => this.spawnClouds(), 1200);
+            }
+
+            update(deltaTime) {
+                this.clouds = this.clouds.filter(cloud => {
+                    cloud.y += cloud.vy;
+                    return cloud.y < this.game.canvas.height + 50;
+                });
+
+                if (this.hits >= this.requiredHits) {
+                    setTimeout(() => {
+                        this.game.tipText = "Сила миру в єдності. Намалюй коло друзів і впиши туди тих, із ким тобі добре.";
+                        this.game.setState(GAME_STATES.TIP);
+                    }, 1000);
+                }
+            }
+
+            render() {
+                // Друзі
+                this.friends.forEach(friend => {
+                    this.game.renderSystem.drawEmoji(friend.emoji, friend.x, friend.y, 50);
+                });
+
+                // Хмари
+                this.clouds.forEach(cloud => {
+                    this.game.renderSystem.drawEmoji(cloud.emoji, cloud.x, cloud.y, cloud.size);
+                });
+
+                this.game.renderSystem.drawText(`Відбито: ${this.hits}/${this.requiredHits}`, this.game.canvas.width / 2, 40, '24px', '#FFFFFF');
+            }
+
+            handleInput(inputs) {
+                inputs.forEach(input => {
+                    for (let i = 0; i < this.clouds.length; i++) {
+                        const cloud = this.clouds[i];
+                        if (CollisionSystem.isPointInCircle(input.x, input.y, cloud.x, cloud.y, cloud.size / 2)) {
+                            this.clouds.splice(i, 1);
+                            this.hits++;
+                            break;
+                        }
+                    }
+                });
+            }
+        }
+
+        // --- LEVEL 4: Дерево миру ---
+        class Level4State extends GameState {
+            constructor(game) {
+                super(game);
+                this.tree = { x: this.game.canvas.width / 2, y: this.game.canvas.height * 0.7, emoji: '🌳' };
+                this.leaves = [];
+                this.attachedLeaves = [];
+                this.requiredLeaves = 13;
+            }
+
+            enter() {
+                this.attachedLeaves = [];
+                this.spawnLeaves();
+                this.game.showUI(['endBtn']);
+            }
+
+            spawnLeaves() {
+                if (this.attachedLeaves.length >= this.requiredLeaves) return;
+                const leaf = {
+                    x: Math.random() * this.game.canvas.width,
+                    y: -50,
+                    size: 30,
+                    vy: 1 + Math.random() * 2,
+                    emoji: ['🍃', '🍂'][Math.floor(Math.random() * 2)]
+                };
+                this.leaves.push(leaf);
+                setTimeout(() => this.spawnLeaves(), 1000);
+            }
+
+            update(deltaTime) {
+                this.leaves = this.leaves.filter(leaf => {
+                    leaf.y += leaf.vy;
+                    return leaf.y < this.game.canvas.height + 50;
+                });
+
+                if (this.attachedLeaves.length >= this.requiredLeaves) {
+                    setTimeout(() => {
+                        this.game.tipText = "Мир — це гармонія природи. Намалюй своє «Дерево миру» і підпиши його гілки (доброта, дружба, допомога…)";
+                        this.game.setState(GAME_STATES.TIP);
+                    }, 1000);
+                }
+            }
+
+            render() {
+                // Дерево
+                this.game.renderSystem.drawEmoji(this.tree.emoji, this.tree.x, this.tree.y, 80);
+
+                // Листочки в повітрі
+                this.leaves.forEach(leaf => {
+                    this.game.renderSystem.drawEmoji(leaf.emoji, leaf.x, leaf.y, leaf.size);
+                });
+
+                // Прикріплені листочки (довкола дерева)
+                this.attachedLeaves.forEach((leaf, i) => {
+                    const angle = (i / this.attachedLeaves.length) * Math.PI * 2;
+                    const radius = 60;
+                    const x = this.tree.x + Math.cos(angle) * radius;
+                    const y = this.tree.y + Math.sin(angle) * radius - 20;
+                    this.game.renderSystem.drawEmoji(leaf.emoji, x, y, leaf.size);
+                });
+
+                this.game.renderSystem.drawText(`Листочків: ${this.attachedLeaves.length}/${this.requiredLeaves}`, this.game.canvas.width / 2, 40, '24px', '#FFFFFF');
+            }
+
+            handleInput(inputs) {
+                inputs.forEach(input => {
+                    for (let i = 0; i < this.leaves.length; i++) {
+                        const leaf = this.leaves[i];
+                        if (CollisionSystem.isPointInCircle(input.x, input.y, leaf.x, leaf.y, leaf.size / 2)) {
+                            this.attachedLeaves.push({...leaf});
+                            this.leaves.splice(i, 1);
+                            break;
+                        }
+                    }
+                });
+            }
+        }
+
+        // --- LEVEL 5: Серце миру ---
+        class Level5State extends GameState {
+            constructor(game) {
+                super(game);
+                this.heart = { x: this.game.canvas.width / 2, y: this.game.canvas.height / 2, size: 60, pulse: 0 };
+                this.brightness = 0.3;
+            }
+
+            enter() {
+                this.game.showUI(['endBtn']);
+            }
+
+            update(deltaTime) {
+                this.heart.pulse += deltaTime * 5;
+                this.heart.size = 60 + Math.sin(this.heart.pulse) * 10;
+
+                if (this.brightness < 1) {
+                    this.brightness += 0.005;
+                }
+            }
+
+            render() {
+                // Пульсуюче серце
+                const heartEmoji = this.brightness > 0.7 ? '💙💛' : '❤️';
+                this.game.renderSystem.drawEmoji(heartEmoji, this.heart.x, this.heart.y, this.heart.size);
+
+                this.game.renderSystem.drawText("Торкнись серця, щоб воно засяяло!", this.game.canvas.width / 2, this.game.canvas.height - 60, '20px', '#FFFFFF');
+            }
+
+            handleInput(inputs) {
+                inputs.forEach(input => {
+                    if (CollisionSystem.isPointInCircle(input.x, input.y, this.heart.x, this.heart.y, this.heart.size / 2)) {
+                        this.brightness = Math.min(1, this.brightness + 0.2);
+                    }
+                });
+
+                if (this.brightness >= 1) {
+                    setTimeout(() => {
+                        this.game.tipText = "Мир у світі починається з миру в серці. Намалюй свій особистий символ миру.";
+                        this.game.setState(GAME_STATES.TIP);
+                    }, 1000);
+                }
+            }
+        }
+
+        // --- TIP STATE ---
+        class TipState extends GameState {
+            enter() {
+                this.game.showUI(['nextBtn', 'endBtn']);
+            }
+
+            render() {
+                this.game.renderSystem.drawText("💡 Творче завдання:", this.game.canvas.width / 2, this.game.canvas.height / 2 - 80, '28px', '#FFD700');
+                this.game.renderSystem.drawText(this.game.tipText, this.game.canvas.width / 2, this.game.canvas.height / 2, '20px', '#FFFFFF', 'center');
+                this.game.renderSystem.drawText("Натисни ▶️ Далі", this.game.canvas.width / 2, this.game.canvas.height / 2 + 80, '24px', '#00FF7F');
+            }
+
+            handleInput(inputs) {
+                if (inputs.length > 0) {
+                    const levelMap = {
+                        [GAME_STATES.LEVEL_1]: GAME_STATES.LEVEL_2,
+                        [GAME_STATES.LEVEL_2]: GAME_STATES.LEVEL_3,
+                        [GAME_STATES.LEVEL_3]: GAME_STATES.LEVEL_4,
+                        [GAME_STATES.LEVEL_4]: GAME_STATES.LEVEL_5,
+                        [GAME_STATES.LEVEL_5]: GAME_STATES.END
+                    };
+                    this.game.setState(levelMap[this.game.previousState] || GAME_STATES.END);
+                }
+            }
+        }
+
+        // --- END STATE ---
+        class EndState extends GameState {
+            enter() {
+                this.game.showUI(['resetBtn', 'endBtn']);
+            }
+
+            render() {
+                this.game.renderSystem.drawText("🎉 Гру завершено!", this.game.canvas.width / 2, this.game.canvas.height / 2 - 40, '32px', '#00FF7F');
+                this.game.renderSystem.drawText("Ти пройшов усі рівні миру!", this.game.canvas.width / 2, this.game.canvas.height / 2 + 20, '24px', '#FFFFFF');
+            }
+        }
+
+        // ============ MAIN GAME CLASS ============
+        class Game {
+            constructor() {
+                this.canvas = document.getElementById('gameCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+
+                // Прозорий фон — бачимо камеру!
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+                this.inputSystem = new InputSystem(this.canvas);
+                this.renderSystem = new RenderSystem(this.ctx, this.canvas);
+                this.stateMap = {
+                    [GAME_STATES.MENU]: new MenuState(this),
+                    [GAME_STATES.LEVEL_1]: new Level1State(this),
+                    [GAME_STATES.LEVEL_2]: new Level2State(this),
+                    [GAME_STATES.LEVEL_3]: new Level3State(this),
+                    [GAME_STATES.LEVEL_4]: new Level4State(this),
+                    [GAME_STATES.LEVEL_5]: new Level5State(this),
+                    [GAME_STATES.TIP]: new TipState(this),
+                    [GAME_STATES.END]: new EndState(this)
+                };
+
+                this.currentState = null;
+                this.previousState = null;
+                this.tipText = "";
+                this.lastTime = 0;
+
+                // Динамічна кнопка "Далі"
+                this.nextBtn = document.createElement('button');
+                this.nextBtn.id = 'nextBtn';
+                this.nextBtn.className = 'ui-btn';
+                this.nextBtn.textContent = '⏭ Далі';
+                this.nextBtn.style.bottom = '180px';
+                this.nextBtn.style.background = 'linear-gradient(45deg, #54a0ff, #5f27cd)';
+                this.nextBtn.addEventListener('click', () => {
+                    const levelMap = {
+                        [GAME_STATES.LEVEL_1]: GAME_STATES.LEVEL_2,
+                        [GAME_STATES.LEVEL_2]: GAME_STATES.LEVEL_3,
+                        [GAME_STATES.LEVEL_3]: GAME_STATES.LEVEL_4,
+                        [GAME_STATES.LEVEL_4]: GAME_STATES.LEVEL_5,
+                        [GAME_STATES.LEVEL_5]: GAME_STATES.END
+                    };
+                    this.setState(levelMap[this.previousState] || GAME_STATES.END);
+                });
+                document.body.appendChild(this.nextBtn);
+
+                this.hideUI(['nextBtn']);
+                this.setState(GAME_STATES.MENU);
+                this.gameLoop(0);
+            }
+
+            setState(state) {
+                if (this.currentState) {
+                    this.currentState.exit();
+                }
+                this.previousState = currentState;
+                currentState = state;
+                this.currentState = this.stateMap[state];
+                this.currentState.enter();
+            }
+
+            showUI(ids) {
+                ids.forEach(id => {
+                    const el = document.getElementById(id) || (id === 'nextBtn' ? this.nextBtn : null);
+                    if (el) el.style.display = 'block';
+                });
+            }
+
+            hideUI(ids) {
+                ids.forEach(id => {
+                    const el = document.getElementById(id) || (id === 'nextBtn' ? this.nextBtn : null);
+                    if (el) el.style.display = 'none';
+                });
+            }
+
+            gameLoop(timestamp) {
+                const deltaTime = (timestamp - this.lastTime) / 1000;
+                this.lastTime = timestamp;
+
+                this.inputSystem.clear();
+                const inputs = this.inputSystem.getInputs();
+
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+                if (this.currentState) {
+                    this.currentState.update(deltaTime);
+                    this.currentState.render();
+                    this.currentState.handleInput(inputs);
+                }
+
+                requestAnimationFrame((ts) => this.gameLoop(ts));
+            }
+        }
+
+        // ============ ІНТЕГРАЦІЯ З ПОТОЧНИМ КОДОМ ============
+        let gameInstance = null;
+
+        function initCanvasGame() {
+            console.log("▶️ Початок Canvas-гри з новою механікою!");
+            isGameRunning = true;
+            playBtn.style.display = 'none';
+            soundBtn.style.display = 'none';
+            youtubeBtn.style.display = 'none';
+            stopBtn.style.display = 'block';
+            resetBtn.style.display = 'none';
+            if (planetModel) planetModel.setAttribute('visible', 'false');
+            document.querySelector('a-scene').style.display = 'none';
+            document.getElementById('canvasGameContainer').style.display = 'block';
+
+            if (bgMusic && !bgMusic.muted) {
+                bgMusic.play().catch(e => console.log("🔇 Музика не запустилася:", e));
+            }
+
+            // Ініціалізація гри
+            if (!gameInstance) {
+                gameInstance = new Game();
+            }
+        }
+
+        function stopGame() {
+            if (!isGameRunning) return;
+            isGameRunning = false;
+            stopBtn.style.display = 'none';
+            resetBtn.style.display = 'none';
+            playBtn.style.display = 'block';
+            soundBtn.style.display = 'block';
+            youtubeBtn.style.display = 'block';
+            document.getElementById('canvasGameContainer').style.display = 'none';
+            document.querySelector('a-scene').style.display = 'block';
+            if (planetModel) planetModel.setAttribute('visible', 'true');
+            timerText.style.display = 'none';
+            scoreText.style.display = 'none';
+            if (endMessage) endMessage.style.display = 'none';
+            stopAllAudio();
+        }
+
+        function resetGame() {
+            stopGame();
+            score = 0;
+            gameInstance = null; // Скидаємо гру
+            playBtn.style.display = 'block';
+            soundBtn.style.display = 'block';
+            youtubeBtn.style.display = 'block';
+            resetBtn.style.display = 'none';
+            if (planetModel) planetModel.setAttribute('visible', 'true');
+        }
+
+        // Оновлюємо обробники
+        playBtn.addEventListener('click', initCanvasGame);
+        stopBtn.addEventListener('click', stopGame);
+        resetBtn.addEventListener('click', resetGame);
+        document.getElementById('endBtn').addEventListener('click', stopGame);
+    </script>
 </body>
 </html>
