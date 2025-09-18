@@ -202,7 +202,7 @@
                 width="1"
                 height="1"
                 rotation="0 0 0"
-                visible="false"
+                visible="true"
             ></a-video>
         </a-entity>
     </a-scene>
@@ -214,7 +214,7 @@
     <a href="https://www.youtube.com/@23smartlessa32?si=d3NhKDot8U8Mc2Hi" id="youtubeBtn" target="_blank" aria-label="Відвідати YouTube-канал SmartLessa">❤️ Автор SmartLessa</a>
 
     <script>
-        // Компонент для обертання (якщо потрібно, але для відео може не підходити)
+        // Компонент для обертання (залишено для потенційного використання)
         AFRAME.registerComponent('rotate-by-touch', {
             init: function () {
                 this.isDragging = false;
@@ -306,6 +306,7 @@
                     audio.muted = true;
                 }
             });
+            if (doveVideo) doveVideo.pause();
         }
 
         // Обробка втрати фокусу сторінки
@@ -313,7 +314,6 @@
             if (document.visibilityState === 'hidden') {
                 console.log("ℹ️ Сторінка втратила фокус, зупиняємо звуки");
                 stopAllAudio();
-                if (doveVideo) doveVideo.pause();
             }
         });
 
@@ -327,6 +327,9 @@
             if (!isMuted && bgMusic) {
                 bgMusic.play().catch(e => console.log("🔇 Музика не запустилася:", e));
             }
+            if (!isMuted && doveVideo) {
+                doveVideo.play().catch(e => console.log("🔇 Відео не запустилося:", e));
+            }
             soundBtn.style.display = 'none';
         });
 
@@ -336,29 +339,18 @@
                 console.log("🎯 Маркер знайдено! Голуб оживає.");
                 arStarted = true;
                 loader.style.display = 'none';
-                if (!isGameRunning) {
-                    playBtn.style.display = 'block';
-                    soundBtn.style.display = 'block';
-                    youtubeBtn.style.display = 'block';
-                    if (doveVideoEntity) doveVideoEntity.setAttribute('visible', 'true');
-                    if (doveVideo) {
-                        doveVideo.play().catch(e => console.log("🔇 Відео не запустилося:", e));
-                    }
+                playBtn.style.display = 'block';
+                soundBtn.style.display = 'block';
+                youtubeBtn.style.display = 'block';
+                if (doveVideoEntity) doveVideoEntity.setAttribute('visible', 'true');
+                if (doveVideo) {
+                    doveVideo.play().catch(e => console.log("🔇 Відео не запустилося:", e));
                 }
             });
 
             targetEntity.addEventListener('targetLost', () => {
-                if (isGameRunning) return;
-                console.log("❌ Маркер втрачено.");
-                playBtn.style.display = 'none';
-                soundBtn.style.display = 'none';
-                youtubeBtn.style.display = 'none';
-                resetBtn.style.display = 'none';
-                if (doveVideoEntity) doveVideoEntity.setAttribute('visible', 'false');
-                if (doveVideo) doveVideo.pause();
-                if (gameElements) gameElements.setAttribute('visible', 'false');
-                timerText.style.display = 'none';
-                scoreText.style.display = 'none';
+                console.log("ℹ️ Маркер втрачено, але гра продовжується.");
+                // Не ховаємо UI чи відео, щоб гра не переривалася
             });
         }
 
@@ -498,7 +490,8 @@
 
             render() {
                 this.game.renderSystem.drawText("✨ Обери рівень ✨", this.game.canvas.width / 2, this.game.canvas.height / 2 - 50, '32px', '#FFFFFF');
-                this.game.renderSystem.drawText("Натисни ▶️ Грати", this.game.canvas.width / 2, this.game.canvas.height / 2 + 20, '24px', '#FFD700');
+                this.game.renderSystem.drawText("Тисни на елементи — врятуй від темряви!", this.game.canvas.width / 2, this.game.canvas.height / 2, '24px', '#FFD700');
+                this.game.renderSystem.drawText("Натисни ▶️ Грати", this.game.canvas.width / 2, this.game.canvas.height / 2 + 50, '24px', '#00FF7F');
             }
 
             handleInput(inputs) {
@@ -568,6 +561,7 @@
                 });
 
                 this.game.renderSystem.drawText(`Зібрано: ${this.collected}/${this.maxLights}`, this.game.canvas.width / 2, 40, '20px', '#FFD700');
+                this.game.renderSystem.drawText("Тисни на елементи — врятуй від темряви!", this.game.canvas.width / 2, this.game.canvas.height - 40, '20px', '#FFFFFF');
             }
 
             handleInput(inputs) {
@@ -577,6 +571,9 @@
                         if (CollisionSystem.isPointInCircle(input.x, input.y, light.x, light.y, light.size / 2)) {
                             this.lights.splice(i, 1);
                             this.collected++;
+                            if (clickSound && !clickSound.muted) {
+                                clickSound.play().catch(e => console.log("🔇 Звук кліку не запустився:", e));
+                            }
                             break;
                         }
                     }
@@ -661,6 +658,9 @@
                         if (CollisionSystem.isPointInCircle(input.x, input.y, letter.x, letter.y, letter.size / 2)) {
                             if (this.current.length < 3 && letter.emoji === this.required[this.current.length]) {
                                 this.current.push(letter.emoji);
+                                if (clickSound && !clickSound.muted) {
+                                    clickSound.play().catch(e => console.log("🔇 Звук кліку не запустився:", e));
+                                }
                             }
                             this.letters.splice(i, 1);
                             break;
@@ -736,6 +736,9 @@
                         if (CollisionSystem.isPointInCircle(input.x, input.y, cloud.x, cloud.y, cloud.size / 2)) {
                             this.clouds.splice(i, 1);
                             this.hits++;
+                            if (clickSound && !clickSound.muted) {
+                                clickSound.play().catch(e => console.log("🔇 Звук кліку не запустився:", e));
+                            }
                             break;
                         }
                     }
@@ -807,6 +810,9 @@
                         if (CollisionSystem.isPointInCircle(input.x, input.y, leaf.x, leaf.y, leaf.size / 2)) {
                             this.attachedLeaves.push({...leaf});
                             this.leaves.splice(i, 1);
+                            if (clickSound && !clickSound.muted) {
+                                clickSound.play().catch(e => console.log("🔇 Звук кліку не запустився:", e));
+                            }
                             break;
                         }
                     }
@@ -843,6 +849,9 @@
                 inputs.forEach(input => {
                     if (CollisionSystem.isPointInCircle(input.x, input.y, this.heart.x, this.heart.y, this.heart.size / 2)) {
                         this.brightness = Math.min(1, this.brightness + 0.2);
+                        if (clickSound && !clickSound.muted) {
+                            clickSound.play().catch(e => console.log("🔇 Звук кліку не запустився:", e));
+                        }
                     }
                 });
 
@@ -992,7 +1001,7 @@
                 }
 
                 if (this.debug) {
-                    console.log(`State: ${this.currentState ? this.currentState.constructor.name : 'none'}, Score: ${score}, Running: ${isGameRunning}`);
+                    console.log(`State: ${this.currentState ? this.currentState.constructor.name : 'none'}, Score: ${score}, Running: ${isGameRunning}, AR: ${arStarted}`);
                 }
 
                 requestAnimationFrame((ts) => this.gameLoop(ts));
@@ -1025,6 +1034,7 @@
         function stopGame() {
             if (!isGameRunning) return;
             isGameRunning = false;
+            arStarted = false; // Скидаємо AR, щоб вимагати повторне сканування маркера
             stopBtn.style.display = 'none';
             resetBtn.style.display = 'none';
             playBtn.style.display = 'block';
@@ -1033,11 +1043,11 @@
             document.getElementById('canvasGameContainer').style.display = 'none';
             document.querySelector('a-scene').style.display = 'block';
             if (doveVideoEntity) doveVideoEntity.setAttribute('visible', 'true');
+            loader.style.display = 'block';
             timerText.style.display = 'none';
             scoreText.style.display = 'none';
             endMessage.style.display = 'none';
             stopAllAudio();
-            if (doveVideo) doveVideo.pause();
         }
 
         function resetGame() {
