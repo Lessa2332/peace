@@ -21,7 +21,7 @@
             height: 100%;
             overflow: hidden;
             font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
-            background: transparent; /* Прозорий фон для всього тіла */
+            background: transparent; /* Прозорий фон */
         }
         a-scene {
             width: 100% !important;
@@ -37,14 +37,14 @@
             position: absolute;
             top: 0;
             left: 0;
-            background: rgba(135, 206, 235, 0.8); /* М'якший фон */
+            background: rgba(135, 206, 235, 0.2); /* Майже прозорий лоадер */
             z-index: 9999;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: #FF4500; /* Яскравий колір тексту */
-            font-size: 2em; /* Більший шрифт для дітей */
+            color: #FF4500;
+            font-size: 1.8em;
             text-align: center;
             padding: 20px;
             box-sizing: border-box;
@@ -53,27 +53,27 @@
             position: fixed;
             left: 50%;
             transform: translateX(-50%);
-            padding: 20px 40px; /* Більші кнопки для дітей */
-            border-radius: 50px; /* Закруглені кути */
-            font-size: 1.5em; /* Більший текст */
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.2em;
             font-weight: bold;
             text-decoration: none;
             z-index: 1000;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); /* Глибша тінь */
-            transition: all 0.3s ease; /* Плавніша анімація */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
             cursor: pointer;
             border: none;
             display: none;
             color: white;
-            animation: bounce 1s infinite; /* Анімація стрибка для кнопок */
+            animation: bounce 1s infinite;
         }
         @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+            0%, 100% { transform: translate(-50%, 0); }
+            50% { transform: translate(-50%, -8px); }
         }
         #playBtn {
             bottom: 200px;
-            background: linear-gradient(45deg, #FF69B4, #FF4500); /* Яскравіші кольори */
+            background: linear-gradient(45deg, #FF69B4, #FF4500);
         }
         #stopBtn {
             bottom: 200px;
@@ -83,6 +83,14 @@
             bottom: 120px;
             background: linear-gradient(45deg, #00BFFF, #1E90FF);
         }
+        #nextBtn {
+            bottom: 180px;
+            background: linear-gradient(45deg, #54a0ff, #5f27cd);
+        }
+        #endBtn {
+            bottom: 260px;
+            background: linear-gradient(45deg, #FF4500, #FF0000);
+        }
         #soundBtn {
             bottom: 280px;
             background: linear-gradient(45deg, #32CD32, #228B22);
@@ -91,15 +99,15 @@
             bottom: 40px;
             left: 40px;
             transform: none;
-            padding: 15px 25px;
+            padding: 12px 20px;
             background: linear-gradient(45deg, #FF4500, #FF69B4);
             border-radius: 30px;
-            font-size: 1.2em;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+            font-size: 1em;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             z-index: 1100;
         }
         #youtubeBtn:hover {
-            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 7px 18px rgba(0, 0, 0, 0.4);
         }
         .ui-info-text {
             position: fixed;
@@ -108,41 +116,41 @@
             z-index: 500;
             text-align: left;
             font-weight: bold;
-            text-shadow: 3px 3px 8px rgba(0,0,0,0.6); /* Глибша тінь для тексту */
-            color: #FFD700; /* Жовтий колір для кращої видимості */
-            font-size: 1.6em;
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
+            color: #FFD700;
+            font-size: 1.4em;
         }
         #timerText {
             color: #00008B;
-            font-size: 1.6em;
+            font-size: 1.4em;
             display: none;
         }
         #scoreText {
-            top: 60px;
+            top: 50px;
             color: #00FF7F;
-            font-size: 1.6em;
+            font-size: 1.4em;
             display: none;
         }
         #canvasGameContainer {
             z-index: 1000;
             position: relative;
-            background: transparent; /* Прозорий фон для Canvas */
+            background: transparent;
         }
         #endMessage {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(255, 165, 0, 0.9); /* Яскравий помаранчевий фон */
+            background: rgba(255, 165, 0, 0.9);
             color: white;
-            padding: 30px;
+            padding: 25px;
             border-radius: 20px;
             z-index: 10000;
-            font-size: 1.5em;
+            font-size: 1.3em;
             text-align: center;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
             display: none;
-            animation: popIn 0.5s ease; /* Анімація появи */
+            animation: popIn 0.5s ease;
         }
         @keyframes popIn {
             0% { transform: scale(0.5); opacity: 0; }
@@ -161,8 +169,8 @@
 <body>
     <div class="arjs-loader" id="loader">
         <div class="pulse">🎉 Ласкаво просимо до гри «Місія Миру» 🎈</div>
-        <div style="margin-top: 30px; font-size: 1.3em;">
-            Наведи камеру на розмальовку голуба, щоб побачити, як він оживає! 😊🎨
+        <div style="margin-top: 20px; font-size: 1.2em;">
+            Наведи камеру на розмальовку голуба! 😊🎨
         </div>
     </div>
 
@@ -171,7 +179,7 @@
 
     <div id="canvasGameContainer" style="display: none;">
         <canvas id="gameCanvas"></canvas>
-        <button id="endBtn" class="ui-btn">🛑 Завершити</button>
+        <button id="endBtn" class="ui-btn" aria-label="Завершити гру">🛑 Завершити</button>
     </div>
 
     <div id="endMessage"></div>
@@ -331,7 +339,7 @@
             }
         });
 
-        // Кнопка увімкнення/вимикання звуку
+        // Кнопка увімкнення/вимкнення звуку
         soundBtn.addEventListener('click', () => {
             const isMuted = bgMusic ? bgMusic.muted : true;
             [bgMusic, logoSound, clickSound, doveVideo].forEach(media => {
@@ -434,7 +442,7 @@
             constructor(ctx, canvas) {
                 this.ctx = ctx;
                 this.canvas = canvas;
-                this.ctx.font = "20px 'Comic Neue', 'Comic Sans MS', cursive, sans-serif"; // Зменшено розмір шрифту
+                this.ctx.font = "18px 'Comic Neue', 'Comic Sans MS', cursive, sans-serif";
                 this.ctx.textAlign = 'center';
                 this.ctx.textBaseline = 'middle';
             }
@@ -443,7 +451,7 @@
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             }
 
-            drawText(text, x, y, size = `${Math.min(this.canvas.width, this.canvas.height) * 0.04}px`, color = '#FFFFFF', align = 'center') {
+            drawText(text, x, y, size = '20px', color = '#FFFFFF', align = 'center') {
                 this.ctx.font = `${size} 'Comic Neue', 'Comic Sans MS', cursive, sans-serif`;
                 this.ctx.textAlign = align;
                 this.ctx.fillStyle = color;
@@ -453,7 +461,7 @@
                 this.ctx.shadowBlur = 0;
             }
 
-            drawWrappedText(text, x, y, size = '18px', color = '#FFFFFF', maxWidth = 280) { // Зменшено розмір шрифту
+            drawWrappedText(text, x, y, size = '16px', color = '#FFFFFF', maxWidth = 250) {
                 this.ctx.font = `${size} 'Comic Neue', 'Comic Sans MS', cursive, sans-serif`;
                 this.ctx.textAlign = 'center';
                 this.ctx.fillStyle = color;
@@ -486,7 +494,7 @@
             drawEmoji(emoji, x, y, size, alpha = 1) {
                 this.ctx.globalAlpha = alpha;
                 this.ctx.font = `${size}px 'Comic Neue', 'Comic Sans MS', cursive, sans-serif`;
-                this.ctx.fillStyle = '#FFD700'; // Контрастний колір
+                this.ctx.fillStyle = '#FFD700';
                 this.ctx.strokeStyle = '#000000';
                 this.ctx.lineWidth = 2;
                 this.ctx.textAlign = 'center';
@@ -497,7 +505,6 @@
             }
 
             drawExplosion(x, y, time) {
-                // Проста анімація вибуху зірочок
                 this.ctx.fillStyle = '#FF4500';
                 for (let i = 0; i < 10; i++) {
                     const angle = Math.random() * 2 * Math.PI;
@@ -515,24 +522,6 @@
             }
         }
 
-        class ObjectPool {
-            constructor(createFn, resetFn) {
-                this.createFn = createFn;
-                this.resetFn = resetFn;
-                this.pool = [];
-            }
-
-            acquire() {
-                return this.pool.length > 0 ? this.pool.pop() : this.createFn();
-            }
-
-            release(obj) {
-                this.resetFn(obj);
-                this.pool.push(obj);
-            }
-        }
-
-        // ============ GAME STATE MANAGERS ============
         class GameState {
             constructor(game) {
                 this.game = game;
@@ -546,14 +535,14 @@
 
         class MenuState extends GameState {
             enter() {
-                this.game.hideUI(['stopBtn', 'resetBtn', 'nextBtn', 'endBtn']);
-                this.game.showUI(['playBtn']);
+                this.game.resetUI();
+                this.game.showUI(['playBtn', 'soundBtn', 'youtubeBtn']);
             }
 
             render() {
-                this.game.renderSystem.drawText("✨ Місія Миру ✨", this.game.canvas.width / 2, this.game.canvas.height / 2 - 100, '40px', '#FF69B4');
-                this.game.renderSystem.drawText("Тисни на елементи — врятуй світ від темряви! 🌟", this.game.canvas.width / 2, this.game.canvas.height / 2 - 50, '28px', '#FFD700');
-                this.game.renderSystem.drawText("Натисни 🚀 Почати!", this.game.canvas.width / 2, this.game.canvas.height / 2 + 50, '32px', '#32CD32');
+                this.game.renderSystem.drawText("✨ Місія Миру ✨", this.game.canvas.width / 2, this.game.canvas.height / 2 - 80, '36px', '#FF69B4');
+                this.game.renderSystem.drawText("Тисни на зірочки — врятуй світ! 🌟", this.game.canvas.width / 2, this.game.canvas.height / 2 - 30, '20px', '#FFD700');
+                this.game.renderSystem.drawText("Натисни 🚀 Почати!", this.game.canvas.width / 2, this.game.canvas.height / 2 + 30, '24px', '#32CD32');
             }
 
             handleInput(inputs) {
@@ -569,17 +558,17 @@
                 this.lights = [];
                 this.maxLights = 8;
                 this.collected = 0;
-                this.bgDarkness = 1;
-                this.explosions = []; // Для анімацій вибухів
+                this.bgDarkness = 0.8;
+                this.explosions = [];
             }
 
             enter() {
                 this.lights = [];
                 this.collected = 0;
-                this.bgDarkness = 1;
+                this.bgDarkness = 0.8;
                 this.explosions = [];
                 this.spawnLights();
-                this.game.hideUI(['playBtn', 'stopBtn', 'resetBtn', 'nextBtn']);
+                this.game.resetUI();
                 this.game.showUI(['endBtn']);
             }
 
@@ -588,11 +577,11 @@
                     this.lights.push({
                         x: Math.random() * this.game.canvas.width,
                         y: Math.random() * this.game.canvas.height,
-                        size: 40 + Math.random() * 20, // Більші елементи
-                        vx: (Math.random() - 0.5) * 3, // Швидший рух
+                        size: 35 + Math.random() * 15,
+                        vx: (Math.random() - 0.5) * 3,
                         vy: (Math.random() - 0.5) * 3,
-                        emoji: ['✨', '💫', '⭐'][Math.floor(Math.random() * 3)], // Різноманітні емодзі
-                        pulse: Math.random() * 2 * Math.PI // Для пульсації
+                        emoji: ['✨', '💫', '⭐'][Math.floor(Math.random() * 3)],
+                        pulse: Math.random() * 2 * Math.PI
                     });
                 }
             }
@@ -603,11 +592,11 @@
                     light.y += light.vy;
                     if (light.x < 0 || light.x > this.game.canvas.width) light.vx *= -1;
                     if (light.y < 0 || light.y > this.game.canvas.height) light.vy *= -1;
-                    light.pulse += deltaTime * 2; // Швидкість пульсації
+                    light.pulse += deltaTime * 2;
                 });
 
                 if (this.collected > 0) {
-                    this.bgDarkness = Math.max(0, this.bgDarkness - 0.003); // Ще повільніше освітлення
+                    this.bgDarkness = Math.max(0.2, this.bgDarkness - 0.002);
                 }
 
                 this.explosions = this.explosions.filter(exp => {
@@ -619,7 +608,7 @@
                     setTimeout(() => {
                         this.game.tipText = "Мир починається з тебе! Напиши 3 добрі вчинки, які можеш зробити сьогодні. 😊";
                         this.game.setState(GAME_STATES.TIP);
-                    }, 1500); // Довша затримка для святкування
+                    }, 1500);
                 }
             }
 
@@ -628,7 +617,7 @@
                 this.game.ctx.fillRect(0, 0, this.game.canvas.width, this.game.canvas.height);
 
                 this.lights.forEach(light => {
-                    const scale = 1 + Math.sin(light.pulse) * 0.2; // Пульсація розміру
+                    const scale = 1 + Math.sin(light.pulse) * 0.2;
                     const size = light.size * scale;
                     this.game.ctx.fillStyle = '#FFD700';
                     this.game.ctx.strokeStyle = '#FF4500';
@@ -644,8 +633,8 @@
                     this.game.renderSystem.drawExplosion(exp.x, exp.y, exp.time);
                 });
 
-                this.game.renderSystem.drawText(`Зібрано: ${this.collected}/${this.maxLights}`, this.game.canvas.width / 2, 40, '28px', '#32CD32');
-                this.game.renderSystem.drawText("Тисни на зірочки — врятуй від темряви! 🌟", this.game.canvas.width / 2, this.game.canvas.height - 40, '24px', '#FF69B4');
+                this.game.renderSystem.drawText(`Зібрано: ${this.collected}/${this.maxLights}`, this.game.canvas.width / 2, 30, '20px', '#32CD32');
+                this.game.renderSystem.drawText("Тисни на зірочки! 🌟", this.game.canvas.width / 2, this.game.canvas.height - 30, '18px', '#FF69B4');
             }
 
             handleInput(inputs) {
@@ -656,6 +645,8 @@
                             this.explosions.push({ x: light.x, y: light.y, time: 0 });
                             this.lights.splice(i, 1);
                             this.collected++;
+                            score += 10;
+                            scoreText.textContent = `🌟 Очки: ${score}`;
                             if (clickSound && !clickSound.muted) {
                                 clickSound.play().catch(e => console.log("🔇 Звук кліку не запустився:", e));
                             }
@@ -680,24 +671,25 @@
                 this.letters = [];
                 this.spawned = 0;
                 this.spawnLetters();
+                this.game.resetUI();
                 this.game.showUI(['endBtn']);
             }
 
             spawnLetters() {
                 if (this.spawned >= 15) return;
                 const letter = this.required[Math.floor(Math.random() * this.required.length)];
-                const baseSize = Math.min(this.game.canvas.width, this.game.canvas.height) * 0.1; // Більші літери
+                const baseSize = Math.min(this.game.canvas.width, this.game.canvas.height) * 0.08;
                 this.letters.push({
                     x: Math.random() * this.game.canvas.width,
                     y: Math.random() * this.game.canvas.height,
                     size: baseSize,
-                    vx: (Math.random() - 0.5) * 4, // Швидший рух
+                    vx: (Math.random() - 0.5) * 4,
                     vy: (Math.random() - 0.5) * 4,
                     emoji: letter,
-                    color: ['#FF4500', '#32CD32', '#00BFFF'][Math.floor(Math.random() * 3)] // Різнокольорові літери
+                    color: ['#FF4500', '#32CD32', '#00BFFF'][Math.floor(Math.random() * 3)]
                 });
                 this.spawned++;
-                setTimeout(() => this.spawnLetters(), 600); // Швидше спавн
+                setTimeout(() => this.spawnLetters(), 600);
             }
 
             update(deltaTime) {
@@ -719,23 +711,23 @@
             render() {
                 this.letters.forEach(letter => {
                     this.game.ctx.strokeStyle = 'black';
-                    this.game.ctx.lineWidth = 4;
+                    this.game.ctx.lineWidth = 3;
                     this.game.ctx.font = `bold ${letter.size}px 'Comic Neue', 'Comic Sans MS', cursive, sans-serif`;
                     this.game.ctx.textAlign = 'center';
                     this.game.ctx.textBaseline = 'middle';
                     this.game.ctx.strokeText(letter.emoji, letter.x, letter.y);
-
-                    this.game.ctx.fillStyle = letter.color; // Різні кольори
+                    this.game.ctx.fillStyle = letter.color;
                     this.game.ctx.fillText(letter.emoji, letter.x, letter.y);
                 });
 
                 this.game.ctx.strokeStyle = 'black';
                 this.game.ctx.lineWidth = 3;
-                this.game.ctx.font = `bold 32px 'Comic Neue', 'Comic Sans MS', cursive, sans-serif`;
+                this.game.ctx.font = `bold 24px 'Comic Neue', 'Comic Sans MS', cursive, sans-serif`;
                 this.game.ctx.textAlign = 'center';
-                this.game.ctx.strokeText(`Зібрано: ${this.current.join('')}`, this.game.canvas.width / 2, 40);
+                this.game.ctx.strokeText(`Зібрано: ${this.current.join('')}`, this.game.canvas.width / 2, 30);
                 this.game.ctx.fillStyle = '#FFD700';
-                this.game.ctx.fillText(`Зібрано: ${this.current.join('')}`, this.game.canvas.width / 2, 40);
+                this.game.ctx.fillText(`Зібрано: ${this.current.join('')}`, this.game.canvas.width / 2, 30);
+                this.game.renderSystem.drawText("Склади слово МИР! 🌍", this.game.canvas.width / 2, this.game.canvas.height - 30, '18px', '#FF69B4');
             }
 
             handleInput(inputs) {
@@ -745,6 +737,8 @@
                         if (CollisionSystem.isPointInCircle(input.x, input.y, letter.x, letter.y, letter.size / 2)) {
                             if (this.current.length < 3 && letter.emoji === this.required[this.current.length]) {
                                 this.current.push(letter.emoji);
+                                score += 20;
+                                scoreText.textContent = `🌟 Очки: ${score}`;
                             }
                             this.letters.splice(i, 1);
                             if (clickSound && !clickSound.muted) {
@@ -774,6 +768,7 @@
                     { x: this.game.canvas.width * 0.75, y: this.game.canvas.height * 0.7, emoji: '👦' }
                 ];
                 this.spawnClouds();
+                this.game.resetUI();
                 this.game.showUI(['endBtn']);
             }
 
@@ -782,7 +777,7 @@
                 const cloud = {
                     x: Math.random() * this.game.canvas.width,
                     y: -50,
-                    size: 60,
+                    size: 50,
                     vy: 1 + Math.random() * 2,
                     emoji: '☁️⚫'
                 };
@@ -813,7 +808,8 @@
                     this.game.renderSystem.drawEmoji(cloud.emoji, cloud.x, cloud.y, cloud.size);
                 });
 
-                this.game.renderSystem.drawText(`Відбито: ${this.hits}/${this.requiredHits}`, this.game.canvas.width / 2, 40, '24px', '#FFFFFF');
+                this.game.renderSystem.drawText(`Відбито: ${this.hits}/${this.requiredHits}`, this.game.canvas.width / 2, 30, '20px', '#32CD32');
+                this.game.renderSystem.drawText("Розжени хмари! ☁️", this.game.canvas.width / 2, this.game.canvas.height - 30, '18px', '#FF69B4');
             }
 
             handleInput(inputs) {
@@ -823,6 +819,11 @@
                         if (CollisionSystem.isPointInCircle(input.x, input.y, cloud.x, cloud.y, cloud.size / 2)) {
                             this.clouds.splice(i, 1);
                             this.hits++;
+                            score += 15;
+                            scoreText.textContent = `🌟 Очки: ${score}`;
+                            if (clickSound && !clickSound.muted) {
+                                clickSound.play().catch(e => console.log("🔇 Звук кліку не запустився:", e));
+                            }
                             break;
                         }
                     }
@@ -836,12 +837,14 @@
                 this.tree = { x: this.game.canvas.width / 2, y: this.game.canvas.height * 0.7, emoji: '🌳' };
                 this.leaves = [];
                 this.attachedLeaves = [];
-                this.requiredLeaves = 13;
+                this.requiredLeaves = 10;
             }
 
             enter() {
                 this.attachedLeaves = [];
+                this.leaves = [];
                 this.spawnLeaves();
+                this.game.resetUI();
                 this.game.showUI(['endBtn']);
             }
 
@@ -873,7 +876,7 @@
             }
 
             render() {
-                this.game.renderSystem.drawEmoji(this.tree.emoji, this.tree.x, this.tree.y, 80);
+                this.game.renderSystem.drawEmoji(this.tree.emoji, this.tree.x, this.tree.y, 70);
 
                 this.leaves.forEach(leaf => {
                     this.game.renderSystem.drawEmoji(leaf.emoji, leaf.x, leaf.y, leaf.size);
@@ -881,13 +884,14 @@
 
                 this.attachedLeaves.forEach((leaf, i) => {
                     const angle = (i / this.attachedLeaves.length) * Math.PI * 2;
-                    const radius = 60;
+                    const radius = 50;
                     const x = this.tree.x + Math.cos(angle) * radius;
                     const y = this.tree.y + Math.sin(angle) * radius - 20;
                     this.game.renderSystem.drawEmoji(leaf.emoji, x, y, leaf.size);
                 });
 
-                this.game.renderSystem.drawText(`Листочків: ${this.attachedLeaves.length}/${this.requiredLeaves}`, this.game.canvas.width / 2, 40, '24px', '#FFFFFF');
+                this.game.renderSystem.drawText(`Листочків: ${this.attachedLeaves.length}/${this.requiredLeaves}`, this.game.canvas.width / 2, 30, '20px', '#32CD32');
+                this.game.renderSystem.drawText("Збери листочки на дерево! 🌳", this.game.canvas.width / 2, this.game.canvas.height - 30, '18px', '#FF69B4');
             }
 
             handleInput(inputs) {
@@ -897,6 +901,11 @@
                         if (CollisionSystem.isPointInCircle(input.x, input.y, leaf.x, leaf.y, leaf.size / 2)) {
                             this.attachedLeaves.push({...leaf});
                             this.leaves.splice(i, 1);
+                            score += 10;
+                            scoreText.textContent = `🌟 Очки: ${score}`;
+                            if (clickSound && !clickSound.muted) {
+                                clickSound.play().catch(e => console.log("🔇 Звук кліку не запустився:", e));
+                            }
                             break;
                         }
                     }
@@ -907,17 +916,18 @@
         class Level5State extends GameState {
             constructor(game) {
                 super(game);
-                this.heart = { x: this.game.canvas.width / 2, y: this.game.canvas.height / 2, size: 60, pulse: 0 };
+                this.heart = { x: this.game.canvas.width / 2, y: this.game.canvas.height / 2, size: 50, pulse: 0 };
                 this.brightness = 0.3;
             }
 
             enter() {
+                this.game.resetUI();
                 this.game.showUI(['endBtn']);
             }
 
             update(deltaTime) {
                 this.heart.pulse += deltaTime * 5;
-                this.heart.size = 60 + Math.sin(this.heart.pulse) * 10;
+                this.heart.size = 50 + Math.sin(this.heart.pulse) * 8;
 
                 if (this.brightness < 1) {
                     this.brightness += 0.005;
@@ -928,19 +938,24 @@
                 const heartEmoji = this.brightness > 0.7 ? '💙💛' : '❤️';
                 this.game.renderSystem.drawEmoji(heartEmoji, this.heart.x, this.heart.y, this.heart.size);
 
-                this.game.renderSystem.drawText("Торкнись серця, щоб воно засяяло!", this.game.canvas.width / 2, this.game.canvas.height - 60, '20px', '#FFFFFF');
+                this.game.renderSystem.drawText("Торкнись серця, щоб воно засяяло!", this.game.canvas.width / 2, this.game.canvas.height - 30, '18px', '#FF69B4');
             }
 
             handleInput(inputs) {
                 inputs.forEach(input => {
                     if (CollisionSystem.isPointInCircle(input.x, input.y, this.heart.x, this.heart.y, this.heart.size / 2)) {
                         this.brightness = Math.min(1, this.brightness + 0.2);
+                        score += 50;
+                        scoreText.textContent = `🌟 Очки: ${score}`;
+                        if (clickSound && !clickSound.muted) {
+                            clickSound.play().catch(e => console.log("🔇 Звук кліку не запустився:", e));
+                        }
                     }
                 });
 
                 if (this.brightness >= 1) {
                     setTimeout(() => {
-                        this.game.tipText = "Мир у світі починається з миру в серці. Намалюй свій особистий символ миру.";
+                        this.game.tipText = "Мир у світі починається з миру в серці. Намалюй свій символ миру.";
                         this.game.setState(GAME_STATES.TIP);
                     }, 1000);
                 }
@@ -949,13 +964,14 @@
 
         class TipState extends GameState {
             enter() {
+                this.game.resetUI();
                 this.game.showUI(['nextBtn', 'endBtn']);
             }
 
             render() {
-                this.game.renderSystem.drawText("💡 Творче завдання:", this.game.canvas.width / 2, this.game.canvas.height / 2 - 80, '28px', '#FFD700');
-                this.game.renderSystem.drawWrappedText(this.game.tipText, this.game.canvas.width / 2, this.game.canvas.height / 2, '20px', '#FFFFFF', 280);
-                this.game.renderSystem.drawText("Натисни ▶️ Далі", this.game.canvas.width / 2, this.game.canvas.height / 2 + 80, '24px', '#00FF7F');
+                this.game.renderSystem.drawText("💡 Творче завдання:", this.game.canvas.width / 2, this.game.canvas.height / 2 - 60, '24px', '#FFD700');
+                this.game.renderSystem.drawWrappedText(this.game.tipText, this.game.canvas.width / 2, this.game.canvas.height / 2, '16px', '#FFFFFF', 250);
+                this.game.renderSystem.drawText("Натисни ▶️ Далі", this.game.canvas.width / 2, this.game.canvas.height / 2 + 60, '20px', '#00FF7F');
             }
 
             handleInput(inputs) {
@@ -967,16 +983,19 @@
                         [GAME_STATES.LEVEL_4]: GAME_STATES.LEVEL_5,
                         [GAME_STATES.LEVEL_5]: GAME_STATES.END
                     };
-                    this.game.setState(levelMap[this.game.previousState] || GAME_STATES.END);
+                    const nextState = levelMap[this.game.previousState] || GAME_STATES.END;
+                    console.log(`Перехід до стану: ${nextState}`);
+                    this.game.setState(nextState);
                 }
             }
         }
 
         class EndState extends GameState {
             enter() {
+                this.game.resetUI();
                 this.game.showUI(['resetBtn', 'endBtn']);
                 endMessage.style.display = 'block';
-                endMessage.innerHTML = '🎉 Гру завершено!<br>Ти пройшов усі рівні миру!';
+                endMessage.innerHTML = `🎉 Гру завершено!<br>Ти набрав ${score} очок!`;
             }
 
             exit() {
@@ -984,8 +1003,8 @@
             }
 
             render() {
-                this.game.renderSystem.drawText("🎉 Гру завершено!", this.game.canvas.width / 2, this.game.canvas.height / 2 - 40, '32px', '#00FF7F');
-                this.game.renderSystem.drawText("Ти пройшов усі рівні миру!", this.game.canvas.width / 2, this.game.canvas.height / 2 + 20, '24px', '#FFFFFF');
+                this.game.renderSystem.drawText("🎉 Гру завершено!", this.game.canvas.width / 2, this.game.canvas.height / 2 - 30, '28px', '#00FF7F');
+                this.game.renderSystem.drawText(`Ти набрав ${score} очок!`, this.game.canvas.width / 2, this.game.canvas.height / 2 + 20, '20px', '#FFFFFF');
             }
         }
 
@@ -1013,7 +1032,7 @@
                 this.previousState = null;
                 this.tipText = "";
                 this.lastTime = 0;
-                this.debug = true; // Увімкнено для дебагу
+                this.debug = true;
 
                 this.nextBtn = document.createElement('button');
                 this.nextBtn.id = 'nextBtn';
@@ -1030,11 +1049,13 @@
                         [GAME_STATES.LEVEL_4]: GAME_STATES.LEVEL_5,
                         [GAME_STATES.LEVEL_5]: GAME_STATES.END
                     };
-                    this.setState(levelMap[this.previousState] || GAME_STATES.END);
+                    const nextState = levelMap[this.previousState] || GAME_STATES.END;
+                    console.log(`Кнопка Далі: Перехід до ${nextState}`);
+                    this.setState(nextState);
                 });
                 document.body.appendChild(this.nextBtn);
 
-                this.hideUI(['nextBtn']);
+                this.resetUI();
                 this.setState(GAME_STATES.MENU);
                 this.gameLoop(0);
             }
@@ -1045,13 +1066,10 @@
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             }
 
-            setState(state) {
-                if (this.currentState) {
-                    this.currentState.exit();
-                }
-                this.previousState = this.currentState;
-                this.currentState = this.stateMap[state];
-                this.currentState.enter();
+            resetUI() {
+                this.hideUI(['playBtn', 'stopBtn', 'resetBtn', 'nextBtn', 'endBtn', 'soundBtn', 'youtubeBtn']);
+                scoreText.style.display = 'none';
+                timerText.style.display = 'none';
             }
 
             showUI(ids) {
@@ -1059,6 +1077,9 @@
                     const el = document.getElementById(id) || (id === 'nextBtn' ? this.nextBtn : null);
                     if (el) el.style.display = 'block';
                 });
+                if (ids.includes('playBtn') || ids.includes('endBtn')) {
+                    scoreText.style.display = 'block';
+                }
             }
 
             hideUI(ids) {
@@ -1066,6 +1087,16 @@
                     const el = document.getElementById(id) || (id === 'nextBtn' ? this.nextBtn : null);
                     if (el) el.style.display = 'none';
                 });
+            }
+
+            setState(state) {
+                if (this.currentState) {
+                    this.currentState.exit();
+                }
+                this.previousState = Object.values(GAME_STATES).find(key => this.stateMap[key] === this.currentState) || this.previousState;
+                this.currentState = this.stateMap[state];
+                console.log(`Перехід до стану: ${state}, Попередній: ${this.previousState}`);
+                this.currentState.enter();
             }
 
             gameLoop(timestamp) {
@@ -1094,56 +1125,46 @@
         let gameInstance = null;
 
         function initCanvasGame() {
-            console.log("▶️ Початок Canvas-гри з новою механікою!");
+            console.log("▶️ Початок Canvas-гри!");
             isGameRunning = true;
-            playBtn.style.display = 'none';
-            soundBtn.style.display = 'none';
-            youtubeBtn.style.display = 'none';
-            stopBtn.style.display = 'block';
-            resetBtn.style.display = 'none';
-            if (doveVideoEntity) doveVideoEntity.setAttribute('visible', 'false');
-            document.querySelector('a-scene').style.display = 'none';
+            gameInstance = gameInstance || new Game();
+            gameInstance.resetUI();
+            gameInstance.showUI(['endBtn']);
+            scoreText.style.display = 'block';
+            scoreText.textContent = `🌟 Очки: ${score}`;
             document.getElementById('canvasGameContainer').style.display = 'block';
-
+            document.querySelector('a-scene').style.display = 'none';
+            if (doveVideoEntity) doveVideoEntity.setAttribute('visible', 'false');
             if (bgMusic && !bgMusic.muted) {
                 bgMusic.play().catch(e => console.log("🔇 Музика не запустилася:", e));
-            }
-
-            // Ініціалізація гри
-            if (!gameInstance) {
-                gameInstance = new Game();
             }
         }
 
         function stopGame() {
             if (!isGameRunning) return;
             isGameRunning = false;
-            stopBtn.style.display = 'none';
-            resetBtn.style.display = 'none';
+            arStarted = false;
+            if (gameInstance) {
+                gameInstance.resetUI();
+                gameInstance.setState(GAME_STATES.MENU);
+            }
             playBtn.style.display = 'block';
             soundBtn.style.display = 'block';
             youtubeBtn.style.display = 'block';
             document.getElementById('canvasGameContainer').style.display = 'none';
             document.querySelector('a-scene').style.display = 'block';
             if (doveVideoEntity) doveVideoEntity.setAttribute('visible', 'true');
-            timerText.style.display = 'none';
-            scoreText.style.display = 'none';
-            if (endMessage) endMessage.style.display = 'none';
+            loader.style.display = 'block';
             stopAllAudio();
         }
 
         function resetGame() {
             stopGame();
             score = 0;
-            gameInstance = null; // Скидаємо гру
-            playBtn.style.display = 'block';
-            soundBtn.style.display = 'block';
-            youtubeBtn.style.display = 'block';
-            resetBtn.style.display = 'none';
-            if (doveVideoEntity) doveVideoEntity.setAttribute('visible', 'true');
+            scoreText.textContent = `🌟 Очки: ${score}`;
+            gameInstance = null;
         }
 
-        // Оновлюємо обробники
         playBtn.addEventListener('click', initCanvasGame);
         stopBtn.addEventListener('click', stopGame);
         resetBtn.addEventListener('click', resetGame);
