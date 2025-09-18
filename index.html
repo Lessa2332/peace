@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>AR Planet App</title>
+  <title>AR Planet App with MindAR</title>
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.min.js"></script>
   <script>
     // Компонент для обробки жестів (обертання пальцем, pinch для зуму)
     AFRAME.registerComponent('gesture-handler', {
@@ -49,7 +50,7 @@
             evt.touches[0].pageY - evt.touches[1].pageY
           );
           const scaleFactor = currentTouchDistance / this.previousTouchDistance;
-          const newScale = Math.max(0.5, Math.min(3, this.initialScale * scaleFactor)); // Обмеження зуму
+          const newScale = Math.max(0.5, Math.min(3, this.initialScale * scaleFactor));
           this.el.setAttribute('scale', `${newScale} ${newScale} ${newScale}`);
           this.previousTouchDistance = currentTouchDistance;
         }
@@ -74,41 +75,43 @@
   </script>
 </head>
 <body>
-  <a-scene webxr="requiredFeatures: hit-test, local-floor; optionalFeatures: dom-overlay">
-    <a-camera id="camera" cursor="rayOrigin: mouse; fuse: false" raycaster="objects: .clickable"></a-camera>
+  <a-scene mindar-image="imageTargetSrc: https://cdn.jsdelivr.net/npm/mindar-image-target@0.4.0/targets.mind; autoStart: true;">
+    <a-camera id="camera" position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <a-sphere id="planet"
-              position="0 1 -1"
-              radius="0.5"
-              src="https://www.solarsystemscope.com/textures/download/8k_earth_daymap.jpg"
-              gesture-handler
-              scale="1 1 1">
-      <!-- Точки з номерами (розташовані на поверхні, завжди дивляться на камеру) -->
-      <a-text class="clickable"
-              value="1"
-              position="0 0.55 0"
-              scale="0.2 0.2 0.2"
-              look-at="#camera"
-              click-task="task: Мир починається з тебе! Напиши 3 добрі вчинки, які можеш зробити сьогодні."></a-text>
-      <a-text class="clickable"
-              value="2"
-              position="0.55 0 0"
-              scale="0.2 0.2 0.2"
-              look-at="#camera"
-              click-task="task: Захисти планету! Назви 3 способи зменшити пластикові відходи."></a-text>
-      <a-text class="clickable"
-              value="3"
-              position="0 -0.55 0"
-              scale="0.2 0.2 0.2"
-              look-at="#camera"
-              click-task="task: Будь добрим! Поділися компліментом з другом."></a-text>
-      <a-text class="clickable"
-              value="4"
-              position="-0.55 0 0"
-              scale="0.2 0.2 0.2"
-              look-at="#camera"
-              click-task="task: Навчайся! Що ти хочеш вивчити цього тижня?"></a-text>
-    </a-sphere>
+    <a-entity mindar-image-target="targetIndex: 0">
+      <a-sphere id="planet"
+                position="0 0 0"
+                radius="0.5"
+                src="https://cdn.jsdelivr.net/npm/aframe@1.6.0/examples/boilerplate/panorama/earth.jpg"
+                gesture-handler
+                scale="1 1 1">
+        <!-- Точки з номерами (розташовані на поверхні, завжди дивляться на камеру) -->
+        <a-text class="clickable"
+                value="1"
+                position="0 0.55 0"
+                scale="0.2 0.2 0.2"
+                look-at="#camera"
+                click-task="task: Мир починається з тебе! Напиши 3 добрі вчинки, які можеш зробити сьогодні."></a-text>
+        <a-text class="clickable"
+                value="2"
+                position="0.55 0 0"
+                scale="0.2 0.2 0.2"
+                look-at="#camera"
+                click-task="task: Захисти планету! Назви 3 способи зменшити пластикові відходи."></a-text>
+        <a-text class="clickable"
+                value="3"
+                position="0 -0.55 0"
+                scale="0.2 0.2 0.2"
+                look-at="#camera"
+                click-task="task: Будь добрим! Поділися компліментом з другом."></a-text>
+        <a-text class="clickable"
+                value="4"
+                position="-0.55 0 0"
+                scale="0.2 0.2 0.2"
+                look-at="#camera"
+                click-task="task: Навчайся! Що ти хочеш вивчити цього тижня?"></a-text>
+      </a-sphere>
+    </a-entity>
   </a-scene>
 </body>
 </html>
